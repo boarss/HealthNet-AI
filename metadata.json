@@ -1,0 +1,5 @@
+{
+  "name": "HealthNet AI",
+  "description": "An AI-powered primary care network providing clinical decision support, medical imaging analysis, and herbal recommendations for children, women, and older adults.",
+  "requestFramePermissions": ["camera"]
+}
