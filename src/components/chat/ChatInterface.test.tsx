@@ -1,8 +1,8 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ChatInterface from './ChatInterface';
 import * as geminiService from '@/src/services/geminiService';
-import { vi } from 'vitest';
 
 // Mock the API service completely so we don't hit the real network in tests
 vi.mock('@/src/services/geminiService', () => ({
