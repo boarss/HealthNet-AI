@@ -1,8 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
-export const geminiModel = "gemini-3-flash-preview";
+export const geminiModel = "gemini-1.5-flash";
 
 export const SYSTEM_PROMPT = `You are HealthNet AI, a primary care healthcare chatbot. 
 Your goal is to provide clinical decision support, symptom analysis, and health counseling.
@@ -37,51 +33,77 @@ Key Principles:
 Rule-based: If symptoms indicate an emergency (e.g., chest pain, difficulty breathing, sudden confusion), immediately advise seeking emergency care (911 or local emergency services).`;
 
 export async function getChatResponse(messages: { role: string; content: string }[]) {
-  const response = await ai.models.generateContent({
-    model: geminiModel,
-    contents: messages.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-    config: {
-      systemInstruction: SYSTEM_PROMPT,
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          content: { type: Type.STRING, description: "The main response to the user." },
-          reasoning: {
-            type: Type.OBJECT,
-            properties: {
-              steps: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Steps taken to reach the conclusion." },
-              confidence: { type: Type.NUMBER, description: "Confidence score between 0 and 1." },
-              sources: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Types of medical evidence used." }
-            },
-            required: ["steps", "confidence"]
-          }
-        },
-        required: ["content", "reasoning"]
-      }
+  const apiKey = process.env.GEMINI_API_KEY;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
+
+  const payload = {
+    system_instruction: {
+      parts: [{ text: SYSTEM_PROMPT }]
     },
-  });
-  
+    contents: messages.map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }]
+    })),
+    generationConfig: {
+      responseMimeType: "application/json",
+    }
+  };
+
   try {
-    return JSON.parse(response.text);
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (!data.candidates || data.candidates.length === 0) {
+      throw new Error("No candidates returned");
+    }
+
+    const text = data.candidates[0].content.parts[0].text;
+    return JSON.parse(text);
   } catch (e) {
-    console.error("Failed to parse JSON response", e);
-    return { content: response.text, reasoning: { steps: ["Direct response generated"], confidence: 0.5 } };
+    console.error("Failed to fetch or parse JSON response from Gemini API", e);
+    return { content: "I encountered an error connecting to the AI service.", reasoning: { steps: ["Connection failed"], confidence: 0.0 } };
   }
 }
 
 export async function analyzeMedicalImage(base64Image: string, prompt: string) {
-  const response = await ai.models.generateContent({
-    model: geminiModel,
-    contents: {
-      parts: [
-        { inlineData: { mimeType: "image/jpeg", data: base64Image } },
-        { text: prompt }
-      ]
+  const apiKey = process.env.GEMINI_API_KEY;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
+
+  // Extract pure base64 if it has data url scheme
+  const cleanBase64 = base64Image.includes('base64,') ? base64Image.split('base64,')[1] : base64Image;
+
+  const payload = {
+    system_instruction: {
+      parts: [{ text: "You are a medical imaging specialist. Analyze the provided image and provide a detailed report. Include a disclaimer that this is an AI analysis and must be verified by a radiologist or physician." }]
     },
-    config: {
-      systemInstruction: "You are a medical imaging specialist. Analyze the provided image and provide a detailed report. Include a disclaimer that this is an AI analysis and must be verified by a radiologist or physician.",
-    }
-  });
-  return response.text;
+    contents: [{
+      parts: [
+        { text: prompt },
+        { 
+          inline_data: { 
+            mime_type: "image/jpeg", 
+            data: cleanBase64 
+          } 
+        }
+      ]
+    }]
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+  } catch (e) {
+    console.error("Failed to analyze image", e);
+    return "Error analyzing image.";
+  }
 }
