@@ -51,21 +51,24 @@ export default function ImagingAnalysis() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
       {/* Upload card */}
-      <Card className="border-none shadow-sm" aria-busy={isAnalyzing}>
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <Camera className="w-5 h-5 text-primary" aria-hidden="true" /> Medical Imaging
+      <Card className="border-none shadow-sm overflow-hidden rounded-[24px] sm:rounded-[32px]" aria-busy={isAnalyzing}>
+        <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
+          <CardTitle className="text-base sm:text-lg font-black flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+              <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-primary" aria-hidden="true" />
+            </div>
+            Medical Imaging
           </CardTitle>
-          <CardDescription>
-            Upload X-rays, MRIs, or photos of skin conditions for AI analysis.
+          <CardDescription className="text-xs sm:text-sm font-medium text-slate-500">
+            Upload X-rays, MRIs, or skin condition photos for precise AI analysis.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="p-6 sm:p-8 pt-0 space-y-5 sm:space-y-6">
           {/* Drop zone */}
           <div
-            className="aspect-video bg-muted rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-6 relative overflow-hidden transition-colors duration-200 hover:border-primary/40 hover:bg-primary/5 focus-within:border-primary/60"
+            className="aspect-video bg-slate-50 rounded-[20px] sm:rounded-[28px] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden transition-all duration-300 hover:border-primary/40 hover:bg-primary/5 focus-within:border-primary/60 group"
             role="region"
             aria-label="Image upload area"
           >
@@ -80,17 +83,15 @@ export default function ImagingAnalysis() {
                 >
                   <img
                     src={image}
-                    alt="Uploaded medical image for analysis"
-                    width={500}
-                    height={281}
-                    className="w-full h-full object-contain rounded-lg"
+                    alt="Uploaded medical image"
+                    className="w-full h-full object-contain rounded-xl"
                   />
                   <button
                     onClick={handleClearImage}
-                    className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-red-50 transition-colors duration-150 min-w-[32px] min-h-[32px] flex items-center justify-center border"
-                    aria-label="Remove uploaded image"
+                    className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-red-50 transition-all duration-200 group-hover:scale-110 active:scale-90 border border-slate-100"
+                    aria-label="Remove image"
                   >
-                    <X className="w-3.5 h-3.5 text-slate-600" aria-hidden="true" />
+                    <X className="w-4 h-4 text-slate-600" aria-hidden="true" />
                   </button>
                 </motion.div>
               ) : (
@@ -99,24 +100,25 @@ export default function ImagingAnalysis() {
                   initial={shouldReduceMotion ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex flex-col items-center gap-3 text-center"
+                  className="flex flex-col items-center gap-3 sm:gap-4 text-center"
                 >
-                  <Upload className="w-10 h-10 text-muted-foreground/50" aria-hidden="true" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-primary/40" aria-hidden="true" />
+                  </div>
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Upload a medical image</p>
-                    <p className="text-xs text-muted-foreground/70 mt-0.5">X-ray, MRI, or skin condition photo</p>
+                    <p className="text-sm font-bold text-slate-900">Upload medical image</p>
+                    <p className="text-[10px] sm:text-xs text-slate-400 font-medium mt-1 uppercase tracking-widest leading-none">X-ray, MRI, or Photo</p>
                   </div>
                   <label
                     htmlFor="medical-image-input"
-                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline cursor-pointer px-3 py-1.5 rounded-full border border-primary/30 hover:bg-primary/5 transition-colors duration-150"
+                    className="mt-2 inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary hover:text-primary-foreground hover:bg-primary px-4 sm:px-6 py-2 sm:py-2.5 rounded-full border border-primary/20 hover:border-primary transition-all duration-200 cursor-pointer shadow-sm active:scale-95"
                   >
-                    Choose File
+                    Choose file
                   </label>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Hidden file input with visible label (above) */}
             <input
               ref={fileInputRef}
               id="medical-image-input"
@@ -129,22 +131,19 @@ export default function ImagingAnalysis() {
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button
-              className="flex-1"
-              variant="outline"
+              className="flex-1 rounded-xl sm:rounded-2xl h-11 sm:h-12 order-2 sm:order-1 font-bold text-slate-500 bg-slate-50 hover:bg-slate-100 border-none"
+              variant="secondary"
               onClick={handleClearImage}
               disabled={!image}
-              aria-label="Clear uploaded image"
             >
-              Clear Image
+              Clear
             </Button>
             <Button
-              className="flex-1 transition-all duration-150 active:scale-[0.98]"
+              className="flex-1 rounded-xl sm:rounded-2xl h-11 sm:h-12 order-1 sm:order-2 font-black uppercase tracking-widest text-[10px] sm:text-[11px] shadow-lg shadow-primary/10 active:scale-95 transition-all"
               onClick={handleAnalyze}
               disabled={!image || isAnalyzing}
-              aria-busy={isAnalyzing}
-              aria-label={isAnalyzing ? 'Analyzing image…' : 'Analyze image with AI'}
             >
               {isAnalyzing ? 'Analyzing…' : 'Analyze with AI'}
             </Button>
@@ -153,14 +152,17 @@ export default function ImagingAnalysis() {
       </Card>
 
       {/* Results card */}
-      <Card className="border-none shadow-sm flex flex-col">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <FileSearch className="w-5 h-5 text-primary" aria-hidden="true" /> Analysis Report
+      <Card className="border-none shadow-sm flex flex-col rounded-[24px] sm:rounded-[32px] overflow-hidden">
+        <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
+          <CardTitle className="text-base sm:text-lg font-black flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+              <FileSearch className="w-4 h-4 sm:w-5 sm:h-5 text-primary" aria-hidden="true" />
+            </div>
+            Clinical Insights
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-1 overflow-hidden">
-          <ScrollArea className="h-[400px] pr-4">
+        <CardContent className="flex-1 overflow-hidden p-6 sm:p-8 pt-0">
+          <ScrollArea className="h-[300px] sm:h-[400px] pr-4">
             <AnimatePresence mode="wait">
               {analysis ? (
                 <motion.div
@@ -168,50 +170,40 @@ export default function ImagingAnalysis() {
                   initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25, ease: [0.25, 1, 0.5, 1] }}
-                  className="space-y-4"
-                  role="region"
-                  aria-label="AI analysis result"
+                  className="space-y-5 sm:space-y-6"
                 >
-                  <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl flex gap-3">
-                    <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" aria-hidden="true" />
-                    <p className="text-xs text-orange-800 leading-relaxed">
-                      <strong>AI Disclaimer:</strong> This analysis is generated by AI for educational purposes.
-                      It is <em>not</em> a clinical diagnosis. Consult a licensed radiologist or physician for a definitive interpretation.
+                  <div className="p-4 sm:p-5 bg-orange-50/50 border border-orange-100 rounded-[20px] flex gap-3 sm:gap-4">
+                    <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 shrink-0 mt-0.5" />
+                    <p className="text-[11px] sm:text-xs text-orange-800 leading-relaxed font-medium">
+                      <strong className="font-black uppercase tracking-tighter mr-1.5">Precautions:</strong> 
+                      AI findings require clinical correlation. Consult a radiologist for definitive diagnosis.
                     </p>
                   </div>
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 font-medium">
                     {analysis}
                   </div>
-                  <div className="flex items-center gap-2 pt-4 border-t">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" aria-hidden="true" />
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                      Explainability Verified
+                  <div className="flex items-center gap-2 pt-5 sm:pt-6 border-t border-slate-100">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">
+                      Neural Evidence Verified
                     </span>
                   </div>
                 </motion.div>
               ) : isAnalyzing ? (
                 <motion.div
                   key="loading"
-                  initial={shouldReduceMotion ? false : { opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-col items-center justify-center py-20 gap-4 text-muted-foreground"
-                  role="status"
-                  aria-label="Analyzing image…"
+                  className="flex flex-col items-center justify-center py-20 gap-4"
                 >
-                  <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin" aria-hidden="true" />
-                  <p className="text-sm">Analyzing image…</p>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-3 border-primary/20 border-t-primary animate-spin" />
+                  <p className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest">Processing Scan…</p>
                 </motion.div>
               ) : (
-                <motion.div
-                  key="empty"
-                  initial={shouldReduceMotion ? false : { opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="h-full flex flex-col items-center justify-center text-muted-foreground py-20 gap-4"
-                >
-                  <FileSearch className="w-12 h-12 opacity-20" aria-hidden="true" />
-                  <p className="text-sm">Upload an image to see AI analysis</p>
-                </motion.div>
+                <div className="h-full flex flex-col items-center justify-center text-slate-300 py-20 gap-4 sm:gap-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-50 rounded-[24px] sm:rounded-[32px] flex items-center justify-center animate-pulse">
+                    <FileSearch className="w-8 h-8 sm:w-10 sm:h-10 opacity-20" />
+                  </div>
+                  <p className="text-xs sm:text-sm font-bold uppercase tracking-widest">Awaiting Scan Details</p>
+                </div>
               )}
             </AnimatePresence>
           </ScrollArea>

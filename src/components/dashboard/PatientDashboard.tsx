@@ -50,13 +50,14 @@ export default function PatientDashboard() {
   }, []);
 
   return (
+    <>
       {/* Vitals Section - Refined Glass Cards */}
       <section aria-label="Patient vitals" role="region">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-5 px-1">
+        <h3 className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 sm:mb-5 px-1">
           Real-time Biomarkers
         </h3>
         <div
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6"
           role="status"
           aria-label="Real-time vitals overview"
           aria-live="polite"
@@ -72,20 +73,20 @@ export default function PatientDashboard() {
                 ease: [0.25, 1, 0.5, 1],
               }}
             >
-              <div className="glass-panel card-premium p-6 flex flex-col gap-5 rounded-[28px]">
+              <div className="glass-panel card-premium p-5 sm:p-6 flex flex-col gap-4 sm:gap-5 rounded-[24px] sm:rounded-[28px]">
                 <div className="flex items-center justify-between">
-                  <div className={`p-2.5 rounded-2xl ${vital.bg} ring-4 ring-white/30 shrink-0`} aria-hidden="true">
-                    <vital.icon className={`w-5 h-5 ${vital.color}`} />
+                  <div className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl ${vital.bg} ring-4 ring-white/30 shrink-0`} aria-hidden="true">
+                    <vital.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${vital.color}`} />
                   </div>
-                  <Badge className="bg-emerald-50 text-emerald-600 border-none px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider">
+                  <Badge className="bg-emerald-50 text-emerald-600 border-none px-2 sm:px-2.5 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
                     {vital.trend}
                   </Badge>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{vital.label}</p>
-                  <p className="text-3xl font-black text-slate-900 tabular-nums flex items-baseline gap-1.5" aria-label={`${vital.label}: ${vital.value} ${vital.unit}`}>
+                  <p className="text-[9px] sm:text-[10px] text-slate-400 font-black uppercase tracking-widest mb-0.5 sm:mb-1">{vital.label}</p>
+                  <p className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums flex items-baseline gap-1 sm:gap-1.5" aria-label={`${vital.label}: ${vital.value} ${vital.unit}`}>
                     {vital.value}
-                    <span className="text-sm font-bold text-slate-300 uppercase">{vital.unit}</span>
+                    <span className="text-xs sm:text-sm font-bold text-slate-300 uppercase">{vital.unit}</span>
                   </p>
                 </div>
               </div>
@@ -95,24 +96,24 @@ export default function PatientDashboard() {
       </section>
 
       {/* Conditions & Medications - Staggered Glass Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pt-4">
         <motion.div
            initial={{ opacity: 0, x: -20 }}
            animate={{ opacity: 1, x: 0 }}
            transition={{ delay: 0.3 }}
-           className="glass-panel rounded-[32px] overflow-hidden"
+           className="glass-panel rounded-[24px] sm:rounded-[32px] overflow-hidden"
         >
-          <div className="p-8 border-b border-white/40 bg-white/20 flex items-center gap-3">
-             <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
-                <User className="w-5 h-5 text-primary" aria-hidden="true" />
+          <div className="p-6 sm:p-8 border-b border-white/40 bg-white/20 flex items-center gap-3">
+             <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+                <User className="w-4 h-4 sm:w-5 sm:h-5 text-primary" aria-hidden="true" />
              </div>
              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-800">Cronic Conditions</h3>
           </div>
-          <div className="p-8 space-y-3">
+          <div className="p-6 sm:p-8 space-y-2 sm:space-y-3">
             {conditions.map((c) => (
-              <div key={c} className="flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-white/60 group hover:bg-white transition-all duration-300 cursor-default">
+              <div key={c} className="flex items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/40 border border-white/60 group hover:bg-white transition-all duration-300 cursor-default">
                 <span className="text-sm font-bold text-slate-700">{c}</span>
-                <Badge className="bg-emerald-100/50 text-emerald-700 border-none px-3 font-bold text-[10px]">active</Badge>
+                <Badge className="bg-emerald-100/50 text-emerald-700 border-none px-2 sm:px-3 font-bold text-[9px] sm:text-[10px]">active</Badge>
               </div>
             ))}
           </div>
@@ -122,19 +123,19 @@ export default function PatientDashboard() {
            initial={{ opacity: 0, x: 20 }}
            animate={{ opacity: 1, x: 0 }}
            transition={{ delay: 0.4 }}
-           className="glass-panel rounded-[32px] overflow-hidden"
+           className="glass-panel rounded-[24px] sm:rounded-[32px] overflow-hidden"
         >
-          <div className="p-8 border-b border-white/40 bg-white/20 flex items-center gap-3">
-             <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
-                <Clock className="w-5 h-5 text-primary" aria-hidden="true" />
+          <div className="p-6 sm:p-8 border-b border-white/40 bg-white/20 flex items-center gap-3">
+             <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary" aria-hidden="true" />
              </div>
              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-800">Medications</h3>
           </div>
-          <div className="p-8 space-y-3">
+          <div className="p-6 sm:p-8 space-y-2 sm:space-y-3">
             {medications.map((m) => (
-              <div key={m} className="flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-white/60 group hover:bg-white transition-all duration-300 cursor-default">
+              <div key={m} className="flex items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/40 border border-white/60 group hover:bg-white transition-all duration-300 cursor-default">
                 <span className="text-sm font-bold text-slate-700 tabular-nums">{m}</span>
-                <Badge variant="outline" className="border-slate-200 text-slate-400 font-bold text-[10px] px-3 uppercase tracking-tighter">Daily</Badge>
+                <Badge variant="outline" className="border-slate-200 text-slate-400 font-bold text-[9px] sm:text-[10px] px-2 sm:px-3 uppercase tracking-tighter">Daily</Badge>
               </div>
             ))}
           </div>
@@ -146,20 +147,20 @@ export default function PatientDashboard() {
          initial={{ opacity: 0, y: 30 }}
          animate={{ opacity: 1, y: 0 }}
          transition={{ delay: 0.5 }}
-         className="glass-panel rounded-[40px] overflow-hidden"
+         className="glass-panel rounded-[32px] sm:rounded-[40px] overflow-hidden"
       >
-        <div className="p-8 border-b border-white/40 bg-white/20 flex items-center gap-3">
-           <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
-              <Calendar className="w-5 h-5 text-primary" aria-hidden="true" />
+        <div className="p-6 sm:p-8 border-b border-white/40 bg-white/20 flex items-center gap-3">
+           <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary" aria-hidden="true" />
            </div>
            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-800">Vaccination History</h3>
         </div>
-        <div className="p-10">
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-8" role="list">
+        <div className="p-6 sm:p-10">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8" role="list">
             {vaccinations.map((v) => (
-              <li key={v.name} className="flex items-center gap-6 group">
+              <li key={v.name} className="flex items-center gap-4 sm:gap-6 group">
                 <div
-                  className={`w-4 h-4 rounded-full ring-8 transition-all duration-500 ${
+                  className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ring-4 sm:ring-8 transition-all duration-500 shrink-0 ${
                     v.status === 'completed' 
                       ? 'bg-emerald-500 ring-emerald-500/10 group-hover:ring-emerald-500/20' 
                       : 'bg-orange-400 ring-orange-500/10 group-hover:ring-orange-500/20'
@@ -167,13 +168,13 @@ export default function PatientDashboard() {
                   aria-hidden="true"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-base font-black text-slate-900 group-hover:text-primary transition-colors">{v.name}</p>
-                  <p className="text-sm font-medium text-slate-400 mt-1">
+                  <p className="text-sm sm:text-base font-black text-slate-900 group-hover:text-primary transition-colors truncate">{v.name}</p>
+                  <p className="text-xs sm:text-sm font-medium text-slate-400 mt-0.5">
                     {v.status === 'completed' ? `Administered on ${v.date}` : `Scheduled for ${v.date}`}
                   </p>
                 </div>
                 {v.status === 'upcoming' && (
-                  <Badge className="bg-orange-100/50 text-orange-600 border-none font-black text-[10px] px-4 py-1.5 rounded-full uppercase tracking-widest">
+                  <Badge className="bg-orange-100/50 text-orange-600 border-none font-black text-[8px] sm:text-[10px] px-2 sm:px-4 py-1 sm:py-1.5 rounded-full uppercase tracking-widest shrink-0">
                     Upcoming
                   </Badge>
                 )}
@@ -182,6 +183,6 @@ export default function PatientDashboard() {
           </ul>
         </div>
       </motion.div>
-    </div>
+    </>
   );
 }

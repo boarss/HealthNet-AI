@@ -50,35 +50,35 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
+      {/* Sidebar - Responsive behavior */}
       <AnimatePresence mode="wait">
         {isSidebarOpen && (
           <motion.aside
-            initial={{ x: -288, opacity: 0 }}
+            initial={{ x: -320, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -288, opacity: 0 }}
+            exit={{ x: -320, opacity: 0 }}
             transition={SPRING}
             aria-label="Application sidebar"
-            className="w-72 glass-panel flex flex-col z-50 fixed inset-y-0 lg:relative overflow-hidden m-4 rounded-3xl"
+            className="w-[280px] sm:w-72 glass-panel flex flex-col z-50 fixed inset-y-0 lg:relative overflow-hidden m-2 sm:m-4 rounded-[24px] sm:rounded-3xl shadow-2xl lg:shadow-glass"
           >
             {/* Logo Section */}
-            <div className="p-8 flex items-center justify-between">
-              <div className="flex items-center gap-3.5">
+            <div className="p-6 sm:p-8 flex items-center justify-between">
+              <div className="flex items-center gap-3">
                 <div
-                  className="w-11 h-11 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-primary/5"
+                  className="w-10 h-10 sm:w-11 sm:h-11 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-primary/5"
                   aria-hidden="true"
                 >
-                  <Activity className="w-6 h-6 text-white" strokeWidth={2.5} />
+                  <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2.5} />
                 </div>
                 <div>
-                  <h1 className="font-extrabold text-xl tracking-tight leading-none" translate="no">HealthNet</h1>
-                  <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest mt-1">Intelligent Care</p>
+                  <h1 className="font-extrabold text-lg sm:text-xl tracking-tight leading-none" translate="no">HealthNet</h1>
+                  <p className="text-[9px] sm:text-[10px] font-bold text-primary/60 uppercase tracking-widest mt-1">Intelligent Care</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden rounded-full hover:bg-slate-100 transition-colors"
+                className="lg:hidden rounded-full hover:bg-slate-100 transition-colors h-9 w-9"
                 onClick={() => {
                   trigger('nudge');
                   setIsSidebarOpen(false);
@@ -90,8 +90,8 @@ export default function App() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-4 space-y-1.5 mt-2" role="navigation" aria-label="Main navigation">
-              <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] px-4 mb-4">
+            <nav className="flex-1 px-3 sm:px-4 space-y-1 mt-2" role="navigation" aria-label="Main navigation">
+              <p className="text-[9px] sm:text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] px-4 mb-4">
                 Main Menu
               </p>
               {SIDEBAR_ITEMS.map(({ icon: Icon, label }, i) => (
@@ -103,20 +103,20 @@ export default function App() {
                 >
                   <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3.5 h-12 text-slate-600 hover:bg-slate-100/50 hover:text-slate-900 rounded-xl px-4 group transition-all duration-200"
+                    className="w-full justify-start gap-3 h-11 sm:h-12 text-slate-600 hover:bg-slate-100/50 hover:text-slate-900 rounded-xl px-4 group transition-all duration-200"
                   >
                     <Icon className="w-4.5 h-4.5 shrink-0 text-slate-400 group-hover:text-primary transition-colors" aria-hidden="true" />
-                    <span className="font-semibold">{label}</span>
+                    <span className="font-semibold text-sm sm:text-base">{label}</span>
                   </Button>
                 </motion.div>
               ))}
             </nav>
 
             {/* User profile section - elevated glass look */}
-            <div className="p-6 mt-auto">
-              <div className="bg-white/40 border border-white/50 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm group hover:bg-white/60 transition-colors duration-200 cursor-pointer">
+            <div className="p-4 sm:p-6 mt-auto">
+              <div className="bg-white/40 border border-white/50 rounded-2xl p-3 sm:p-4 flex items-center gap-3 shadow-sm group hover:bg-white/60 transition-colors duration-200 cursor-pointer">
                 <div className="relative">
-                  <Avatar className="w-11 h-11 border-2 border-white shadow-sm shrink-0 ring-2 ring-emerald-500/20">
+                  <Avatar className="w-9 h-9 sm:w-11 sm:h-11 border-2 border-white shadow-sm shrink-0 ring-2 ring-emerald-500/20">
                     <AvatarImage
                       src="https://picsum.photos/seed/user/100/100"
                       alt="Jane Doe avatar"
@@ -126,19 +126,19 @@ export default function App() {
                     />
                     <AvatarFallback aria-hidden="true">JD</AvatarFallback>
                   </Avatar>
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full shimmer" />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full shimmer" />
                 </div>
                 <div className="flex-1 min-w-0 overflow-hidden">
-                  <p className="text-sm font-bold text-slate-900 truncate">Jane Doe</p>
-                  <p className="text-[11px] font-medium text-slate-500 truncate">Premium Member</p>
+                  <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">Jane Doe</p>
+                  <p className="text-[10px] sm:text-[11px] font-medium text-slate-500 truncate">Premium Member</p>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-slate-400 hover:text-destructive shrink-0 transition-colors"
+                  className="text-slate-400 hover:text-destructive shrink-0 transition-colors h-8 w-8"
                   aria-label="Log out"
                 >
-                  <LogOut className="w-4.5 h-4.5" aria-hidden="true" />
+                  <LogOut className="w-4 h-4" aria-hidden="true" />
                 </Button>
               </div>
             </div>
@@ -148,13 +148,13 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative" role="main">
-        {/* Header - transparent glass sync with content */}
+        {/* Header - responsive spacing and elements */}
         <header
           role="banner"
-          className="h-20 px-6 md:px-10 flex items-center justify-between sticky top-0 z-40"
+          className="h-16 sm:h-20 px-4 sm:px-6 md:px-10 flex items-center justify-between sticky top-0 z-40 bg-slate-50/20 backdrop-blur-sm lg:backdrop-blur-none"
         >
-          <div className="flex items-center gap-4">
-            {!isSidebarOpen && (
+          <div className="flex items-center gap-3 sm:gap-4">
+            {(!isSidebarOpen || window.innerWidth < 1024) && (
               <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
                 <Button
                   variant="ghost"
@@ -164,52 +164,52 @@ export default function App() {
                     setIsSidebarOpen(true);
                   }}
                   aria-label="Open sidebar"
-                  className="rounded-full bg-white/50 backdrop-blur-md shadow-sm border border-white h-11 w-11"
+                  className="rounded-full bg-white/50 backdrop-blur-md shadow-sm border border-white h-9 w-9 sm:h-11 sm:w-11"
                 >
                   <Menu className="w-5 h-5" aria-hidden="true" />
                 </Button>
               </motion.div>
             )}
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Network Status</span>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="hidden xs:inline-block text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">Network</span>
               <Badge
                 variant="secondary"
-                className="bg-emerald-50 text-emerald-700 border-emerald-100/50 gap-2 px-3 py-1 rounded-full font-bold text-[10px]"
+                className="bg-emerald-50 text-emerald-700 border-emerald-100/50 gap-1.5 sm:gap-2 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-bold text-[9px] sm:text-[10px]"
               >
-                <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" aria-hidden="true" />
-                PRIMARY CARE v1.4
+                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 inline-block animate-pulse" aria-hidden="true" />
+                SYNCED v1.4
               </Badge>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <div
-              className="hidden lg:flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] bg-white/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/50"
+              className="hidden sm:flex items-center gap-2 text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] bg-white/40 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/50"
               aria-label="Last synced: Just now"
             >
-              <Clock className="w-3.5 h-3.5 text-emerald-500" aria-hidden={true} /> SYNCED: JUST NOW
+              <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-500" aria-hidden={true} /> SYNCED
             </div>
             <Button
               variant="outline"
               size="sm"
-              className="gap-2 rounded-full bg-white/60 hover:bg-white backdrop-blur-md border-white/80 shadow-sm h-10 px-5 transition-all duration-200 hover:shadow-md"
+              className="gap-1.5 sm:gap-2 rounded-full bg-white/60 hover:bg-white backdrop-blur-md border-white/80 shadow-sm h-9 sm:h-10 px-3 sm:px-5 transition-all duration-200 hover:shadow-md"
               aria-label="Manage secure access"
             >
-              <Shield className="w-4 h-4 text-primary" aria-hidden="true" /> 
-              <span className="font-bold">SECURE PORTAL</span>
+              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" aria-hidden="true" /> 
+              <span className="font-bold text-xs sm:text-sm">SECURE</span>
             </Button>
           </div>
         </header>
 
-        {/* Content Area - Extra padding and alignment */}
-        <div className="flex-1 overflow-y-auto px-6 md:px-10 pb-10 max-w-[1600px] mx-auto w-full">
-          <Tabs defaultValue="chat" className="space-y-8" onValueChange={() => trigger('nudge')}>
-            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pt-4">
-              <div className="space-y-1.5">
+        {/* Content Area - scrollable with responsive padding */}
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-10 pb-10 max-w-[1600px] mx-auto w-full">
+          <Tabs defaultValue="chat" className="space-y-6 sm:space-y-8" onValueChange={() => trigger('nudge')}>
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 sm:gap-6 pt-2 sm:pt-4">
+              <div className="space-y-1">
                 <motion.h2 
                   initial={{ opacity: 0, y: -12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-4xl font-black tracking-tight text-slate-900 lg:text-5xl"
+                  className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 lg:text-5xl"
                 >
                   Dashboard
                 </motion.h2>
@@ -217,37 +217,28 @@ export default function App() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.15 }}
-                  className="text-slate-500 text-base font-medium flex items-center gap-2"
+                  className="text-slate-500 text-sm sm:text-base font-medium flex items-center gap-2"
                 >
-                  Welcome back, <span className="text-primary font-bold">Jane</span>. Your health at a glance.
+                  Welcome back, <span className="text-primary font-bold">Jane</span>.
                 </motion.p>
               </div>
               
-              <TabsList className="bg-slate-200/40 p-1.5 h-auto rounded-2xl gap-1.5 backdrop-blur-md">
-                <TabsTrigger
-                  value="chat"
-                  className="rounded-xl px-5 py-3 gap-2.5 text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-xl data-[state=active]:shadow-primary/5 transition-all duration-300"
-                >
-                  <MessageSquare className="w-4 h-4" aria-hidden="true" /> Chat
-                </TabsTrigger>
-                <TabsTrigger
-                  value="dashboard"
-                  className="rounded-xl px-5 py-3 gap-2.5 text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-xl data-[state=active]:shadow-primary/5 transition-all duration-300"
-                >
-                  <Activity className="w-4 h-4" aria-hidden="true" /> Vitals
-                </TabsTrigger>
-                <TabsTrigger
-                  value="imaging"
-                  className="rounded-xl px-5 py-3 gap-2.5 text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-xl data-[state=active]:shadow-primary/5 transition-all duration-300"
-                >
-                  <Camera className="w-4 h-4" aria-hidden="true" /> Imaging
-                </TabsTrigger>
-                <TabsTrigger
-                  value="herbal"
-                  className="rounded-xl px-5 py-3 gap-2.5 text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-xl data-[state=active]:shadow-primary/5 transition-all duration-300"
-                >
-                  <Leaf className="w-4 h-4" aria-hidden="true" /> Herbal
-                </TabsTrigger>
+              <TabsList className="bg-slate-200/40 p-1 h-auto rounded-2xl gap-1 backdrop-blur-md overflow-x-auto no-scrollbar max-w-full justify-start sm:justify-center">
+                {[
+                  { value: 'chat', icon: MessageSquare, label: 'Chat' },
+                  { value: 'dashboard', icon: Activity, label: 'Vitals' },
+                  { value: 'imaging', icon: Camera, label: 'Imaging' },
+                  { value: 'herbal', icon: Leaf, label: 'Herbal' }
+                ].map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="rounded-xl px-3 sm:px-5 py-2 sm:py-3 gap-2 text-xs sm:text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300"
+                  >
+                    <tab.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" /> 
+                    <span className="hidden xs:inline">{tab.label}</span>
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </div>
 

@@ -94,17 +94,17 @@ export default function HerbalGuide() {
   const categories = Array.from(new Set(REMEDIES.map((r) => r.category)));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Search + Filters */}
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-        <div className="relative w-full md:w-80">
+      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-start lg:items-center justify-between">
+        <div className="relative w-full lg:w-96 group">
           <label htmlFor="herbal-search" className="sr-only">Search herbal remedies</label>
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-primary transition-colors pointer-events-none" aria-hidden="true" />
           <Input
             id="herbal-search"
             name="herbal-search"
-            placeholder="Search remedies or symptoms…"
-            className="pl-10 bg-white border-none shadow-sm h-11 rounded-full focus-visible:ring-2 focus-visible:ring-primary/50"
+            placeholder="Search herbal remedies..."
+            className="pl-12 bg-white border-none shadow-glass h-12 sm:h-14 rounded-2xl sm:rounded-3xl focus-visible:ring-2 focus-visible:ring-primary/20 text-sm font-medium"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             aria-label="Search remedies or symptoms"
@@ -112,7 +112,7 @@ export default function HerbalGuide() {
           />
         </div>
         <div
-          className="flex flex-wrap gap-2"
+          className="flex flex-wrap gap-2 sm:gap-3 w-full lg:w-auto"
           role="group"
           aria-label="Filter by category"
         >
@@ -120,7 +120,7 @@ export default function HerbalGuide() {
             variant={selectedCategory === null ? 'default' : 'outline'}
             size="sm"
             onClick={() => setSelectedCategory(null)}
-            className="rounded-full transition-all duration-150 active:scale-95"
+            className="rounded-full h-8 sm:h-10 px-4 sm:px-6 font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all active:scale-95"
             aria-pressed={selectedCategory === null}
           >
             All
@@ -131,7 +131,7 @@ export default function HerbalGuide() {
               variant={selectedCategory === cat ? 'default' : 'outline'}
               size="sm"
               onClick={() => setSelectedCategory(cat)}
-              className="rounded-full transition-all duration-150 active:scale-95"
+              className="rounded-full h-8 sm:h-10 px-4 sm:px-6 font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all active:scale-95"
               aria-pressed={selectedCategory === cat}
             >
               {cat}
@@ -140,19 +140,21 @@ export default function HerbalGuide() {
         </div>
       </div>
 
-      {/* Results grid — aria-live for filter changes */}
+      {/* Results grid */}
       <div
         role="region"
         aria-live="polite"
-        aria-label="Filtered herbal remedy results"
+        aria-label="Filtered results"
       >
         {filteredRemedies.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-4">
-            <Leaf className="w-12 h-12 opacity-20" aria-hidden="true" />
-            <p className="text-sm">No remedies found. Try a different search or category.</p>
+          <div className="flex flex-col items-center justify-center py-20 sm:py-32 text-slate-300 gap-4 sm:gap-6">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-full flex items-center justify-center shadow-inner">
+              <Leaf className="w-10 h-10 sm:w-12 sm:h-12 opacity-20" />
+            </div>
+            <p className="text-xs sm:text-sm font-bold uppercase tracking-widest">No matching remedies</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8">
             <AnimatePresence mode="popLayout">
               {filteredRemedies.map((remedy, i) => (
                 <motion.div
@@ -167,32 +169,31 @@ export default function HerbalGuide() {
                     delay: shouldReduceMotion ? 0 : i * 0.04,
                   }}
                 >
-                  <Card className="border-none shadow-sm card-interactive h-full flex flex-col">
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="p-2 bg-green-50 rounded-lg" aria-hidden="true">
-                          <Leaf className="w-5 h-5 text-green-600" />
+                  <Card className="border-none shadow-glass card-interactive h-full flex flex-col rounded-[24px] sm:rounded-[32px] overflow-hidden">
+                    <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="p-2.5 sm:p-3 bg-green-50 rounded-xl sm:rounded-2xl ring-4 ring-white/30" aria-hidden="true">
+                          <Leaf className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                         </div>
                         <Badge
                           variant="secondary"
-                          className={`text-[10px] uppercase tracking-wider ${CATEGORY_COLORS[remedy.category] || ''}`}
+                          className={`text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 sm:px-3 py-0.5 sm:py-1 ${CATEGORY_COLORS[remedy.category] || ''}`}
                         >
                           {remedy.category}
                         </Badge>
                       </div>
-                      <CardTitle className="text-xl">{remedy.name}</CardTitle>
-                      <CardDescription className="italic text-xs">{remedy.scientificName}</CardDescription>
+                      <CardTitle className="text-xl sm:text-2xl font-black text-slate-900">{remedy.name}</CardTitle>
+                      <CardDescription className="italic text-xs sm:text-sm font-medium text-slate-400 mt-1">{remedy.scientificName}</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1 space-y-4">
-                      <div className="space-y-2">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Key Benefits</p>
-                        <div className="flex flex-wrap gap-1" role="list" aria-label={`Benefits of ${remedy.name}`}>
+                    <CardContent className="p-6 sm:p-8 pt-0 flex-1 space-y-5 sm:space-y-6">
+                      <div className="space-y-2 sm:space-y-3">
+                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">Primary Benefits</p>
+                        <div className="flex flex-wrap gap-1.5 sm:gap-2">
                           {remedy.benefits.map((b) => (
                             <Badge
                               key={b}
                               variant="outline"
-                              className="text-[10px] font-normal bg-green-50/30"
-                              role="listitem"
+                              className="text-[9px] sm:text-[10px] font-bold bg-green-50/20 border-green-100 text-slate-600 px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg"
                             >
                               {b}
                             </Badge>
@@ -200,29 +201,27 @@ export default function HerbalGuide() {
                         </div>
                       </div>
 
-                      <div className="space-y-1">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Recommended Usage</p>
-                        <p className="text-xs text-slate-600 leading-relaxed">{remedy.usage}</p>
+                      <div className="space-y-2">
+                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">Preparation & Dosage</p>
+                        <p className="text-xs sm:text-[13px] font-medium text-slate-600 leading-relaxed">{remedy.usage}</p>
                       </div>
 
-                      <div className="p-3 bg-orange-50/50 rounded-xl border border-orange-100" role="note" aria-label={`Safety warning for ${remedy.name}`}>
-                        <div className="flex gap-2 items-start">
-                          <AlertCircle className="w-3 h-3 text-orange-500 shrink-0 mt-0.5" aria-hidden="true" />
-                          <p className="text-[10px] text-orange-800 leading-tight">
-                            <strong>Safety:</strong> {remedy.warnings}
+                      <div className="p-4 bg-orange-50/50 rounded-2xl border border-orange-100" role="note">
+                        <div className="flex gap-2 sm:gap-3 items-start">
+                          <AlertCircle className="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5" />
+                          <p className="text-[10px] sm:text-xs text-orange-800 leading-relaxed font-semibold">
+                            <strong className="uppercase">Safety:</strong> {remedy.warnings}
                           </p>
                         </div>
                       </div>
 
-                      {/* Suitability — accessible tag list */}
-                      <div className="pt-2 border-t">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">Suitable For</p>
-                        <div className="flex flex-wrap gap-1" role="list" aria-label={`Who ${remedy.name} is suitable for`}>
+                      <div className="pt-4 sm:pt-6 border-t border-slate-100">
+                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 sm:mb-3">Suitability Registry</p>
+                        <div className="flex flex-wrap gap-1.5 sm:gap-2">
                           {remedy.suitability.map((s) => (
                             <span
                               key={s}
-                              role="listitem"
-                              className="inline-flex items-center text-[10px] bg-primary/8 text-primary px-2 py-0.5 rounded-full font-medium"
+                              className="inline-flex items-center text-[9px] sm:text-[10px] bg-primary/5 text-primary px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-black uppercase tracking-tighter"
                             >
                               {s}
                             </span>
@@ -238,21 +237,21 @@ export default function HerbalGuide() {
         )}
       </div>
 
-      {/* CTA Banner */}
-      <Card className="border-none shadow-sm bg-primary/5">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-6 items-center">
-            <div className="p-4 bg-white rounded-2xl shadow-sm shrink-0" aria-hidden="true">
-              <Leaf className="w-8 h-8 text-primary" />
+      {/* CTA Banner - Optimized for mobile flow */}
+      <Card className="border-none shadow-glass bg-primary/5 rounded-[28px] sm:rounded-[40px] overflow-hidden">
+        <CardContent className="p-6 sm:p-10">
+          <div className="flex flex-col lg:flex-row gap-6 sm:gap-10 items-center">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-[24px] sm:rounded-[32px] shadow-sm flex items-center justify-center shrink-0">
+              <Leaf className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
             </div>
-            <div className="flex-1 text-center md:text-left">
-              <h3 className="text-lg font-bold">Need a Personalized Recommendation?</h3>
-              <p className="text-sm text-slate-600 mt-1">
-                Our AI can analyze your specific health profile and suggest natural alternatives that won’t interfere with your current medications.
+            <div className="flex-1 text-center lg:text-left space-y-2">
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Need Targeted Advice?</h3>
+              <p className="text-sm sm:text-base font-medium text-slate-600 leading-relaxed">
+                Our AI can analyze your unique health profile to suggest bio-compatible botanicals that avoid drug-herb interactions.
               </p>
             </div>
-            <Button className="rounded-full px-8 shrink-0 transition-all duration-150 active:scale-[0.98]">
-              Ask HealthNet AI
+            <Button className="w-full lg:w-auto rounded-xl sm:rounded-2xl h-12 sm:h-14 px-8 sm:px-10 font-black uppercase tracking-widest text-[10px] sm:text-[12px] shadow-xl shadow-primary/10 active:scale-95 transition-all">
+              Consult Clinical Intelligence
             </Button>
           </div>
         </CardContent>

@@ -122,43 +122,43 @@ export default function ChatInterface() {
       };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full min-h-[600px] relative z-10">
-      <div className="lg:col-span-8 flex flex-col h-full bg-white/40 ring-1 ring-white/60 backdrop-blur-3xl rounded-[32px] shadow-2xl shadow-slate-200/50 overflow-hidden">
+    <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 sm:gap-8 h-full min-h-[500px] sm:min-h-[600px] relative z-10">
+      <div className="lg:col-span-8 flex flex-col h-full bg-white/40 ring-1 ring-white/60 backdrop-blur-3xl rounded-[24px] sm:rounded-[32px] shadow-2xl shadow-slate-200/50 overflow-hidden">
         {/* Chat Header - Higher contrast and cleaner typography */}
-        <div className="px-8 py-6 border-b border-white/40 flex items-center justify-between bg-white/20">
-          <div className="flex items-center gap-4">
+        <div className="px-5 py-4 sm:px-8 sm:py-6 border-b border-white/40 flex items-center justify-between bg-white/20">
+          <div className="flex items-center gap-3 sm:gap-4">
             <div className="relative">
-              <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-primary/5">
-                <Bot className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-primary/5">
+                <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shimmer" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 border-2 border-white rounded-full shimmer" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-slate-900 leading-none">HealthNet AI</h3>
-              <div className="flex items-center gap-2 mt-2">
-                <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-none px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">Clinical Expert</Badge>
-                <div className="flex items-center gap-1.5 ml-1">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                  <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest leading-none">Active</span>
+              <h3 className="text-base sm:text-lg font-black text-slate-900 leading-none">HealthNet AI</h3>
+              <div className="flex items-center gap-2 mt-1 sm:mt-2">
+                <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-none px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Clinical Expert</Badge>
+                <div className="hidden xs:flex items-center gap-1.5 ml-1">
+                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                  <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest leading-none">Active</span>
                 </div>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/50 transition-colors h-10 w-10">
-              <Info className="w-4.5 h-4.5 text-slate-400" />
+            <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/50 transition-colors h-9 w-9 sm:h-10 sm:w-10">
+              <Info className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-slate-400" />
             </Button>
           </div>
         </div>
 
         {/* Message Log */}
         <div className="flex-1 overflow-hidden relative">
-          <ScrollArea className="h-full px-8 py-8" ref={scrollRef}>
+          <ScrollArea className="h-full px-4 py-6 sm:px-8 sm:py-8" ref={scrollRef}>
             <div
               role="log"
               aria-label="Conversation history"
               aria-live="polite"
-              className="space-y-8"
+              className="space-y-6 sm:space-y-8"
             >
               <AnimatePresence initial={false}>
                 {messages.map((m, i) => (
@@ -174,10 +174,10 @@ export default function ChatInterface() {
                     }}
                     className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div className={`flex gap-4 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                      <div className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} gap-2`}>
+                    <div className={`flex gap-3 sm:gap-4 max-w-[92%] sm:max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} gap-1.5 sm:gap-2`}>
                         <div
-                          className={`group relative px-6 py-4 rounded-[24px] text-[15px] font-medium leading-relaxed transition-all duration-300 ${
+                          className={`group relative px-4 py-3 sm:px-6 sm:py-4 rounded-[20px] sm:rounded-[24px] text-sm sm:text-[15px] font-medium leading-relaxed transition-all duration-300 ${
                             m.role === 'user'
                               ? 'bg-slate-900 text-white rounded-tr-none shadow-xl shadow-slate-200'
                               : 'bg-white text-slate-800 rounded-tl-none border border-white/80 shadow-md shadow-slate-100/50'
@@ -190,20 +190,20 @@ export default function ChatInterface() {
                                 trigger('nudge');
                                 setSelectedReasoning(m);
                               }}
-                              className="absolute -right-3 -bottom-3 bg-white border border-slate-100 shadow-xl rounded-2xl p-2 text-primary hover:bg-primary hover:text-white transition-all transform hover:scale-110 active:scale-95 opacity-0 group-hover:opacity-100"
+                              className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 bg-white border border-slate-100 shadow-xl rounded-2xl p-1.5 sm:p-2 text-primary hover:bg-primary hover:text-white transition-all transform hover:scale-110 active:scale-95 opacity-0 group-hover:opacity-100"
                             >
-                              <BrainCircuit className="w-4 h-4" />
+                              <BrainCircuit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </button>
                           )}
                         </div>
                         <div className="flex items-center gap-2 px-1">
-                          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+                          <span className="text-[9px] sm:text-[10px] font-bold text-slate-300 uppercase tracking-widest">
                             {new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' }).format(m.timestamp)}
                           </span>
                           {m.role === 'assistant' && (
                             <div className="flex items-center gap-1 opacity-40">
-                              <ShieldCheck className="w-3 h-3 text-emerald-500" />
-                              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter leading-none">Verified</span>
+                              <ShieldCheck className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-500" />
+                              <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-tighter leading-none">Verified</span>
                             </div>
                           )}
                         </div>
@@ -220,12 +220,12 @@ export default function ChatInterface() {
                   animate={{ opacity: 1, y: 0 }}
                   className="flex justify-start pt-2"
                 >
-                  <div className="bg-white/60 border border-white rounded-[20px] px-5 py-3.5 shadow-sm">
-                    <div className="flex gap-2">
+                  <div className="bg-white/60 border border-white rounded-[16px] sm:rounded-[20px] px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm">
+                    <div className="flex gap-1.5 sm:gap-2">
                       {[0, 1, 2].map((i) => (
                         <span
                           key={i}
-                          className="w-1.5 h-1.5 bg-primary rounded-full shimmer"
+                          className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-primary rounded-full shimmer"
                           style={{ 
                             animation: `shimmer 1.5s infinite ease-in-out`,
                             animationDelay: `${i * 0.2}s` 
@@ -241,34 +241,34 @@ export default function ChatInterface() {
         </div>
 
         {/* Input Bar - Floating & Premium */}
-        <div className="p-8 mt-auto border-t border-white/40 bg-white/20">
+        <div className="p-4 sm:p-8 mt-auto border-t border-white/40 bg-white/20">
           <div className="relative group max-w-4xl mx-auto">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-emerald-500/20 rounded-[32px] blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
-            <div className="relative flex items-center gap-3 bg-white p-3 rounded-[28px] border border-white/50 shadow-xl focus-within:shadow-2xl focus-within:shadow-primary/5 transition-all duration-300">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-emerald-500/20 rounded-[28px] sm:rounded-[32px] blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
+            <div className="relative flex items-center gap-2 sm:gap-3 bg-white p-2 sm:p-3 rounded-[24px] sm:rounded-[28px] border border-white/50 shadow-xl focus-within:shadow-2xl focus-within:shadow-primary/5 transition-all duration-300">
               <Input
                 ref={inputRef}
-                placeholder="Ask HealthNet anything..."
+                placeholder="Ask HealthNet..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                className="flex-1 bg-transparent border-none focus-visible:ring-0 text-slate-900 placeholder:text-slate-400 placeholder:font-medium h-12 px-5 text-base"
+                className="flex-1 bg-transparent border-none focus-visible:ring-0 text-slate-900 placeholder:text-slate-400 placeholder:font-medium h-10 sm:h-12 px-3 sm:px-5 text-sm sm:text-base"
                 disabled={isLoading}
               />
               <Button
                 onClick={handleSend}
                 disabled={isLoading || !input.trim()}
-                className="h-12 px-8 rounded-2xl bg-slate-900 hover:bg-black text-white font-black uppercase tracking-widest text-[11px] transition-all transform active:scale-95 shadow-lg"
+                className="h-10 sm:h-12 px-5 sm:px-8 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-black text-white font-black uppercase tracking-widest text-[9px] sm:text-[11px] transition-all transform active:scale-95 shadow-lg shrink-0"
               >
-                Send <Send className="w-3.5 h-3.5 ml-2" />
+                <span className="hidden xs:inline mr-2">Send</span> <Send className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </Button>
             </div>
           </div>
           
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
             {[
-              { icon: Activity, label: 'Symptom Checker', hint: "I'm feeling..." },
-              { icon: Leaf, label: 'Herbal Guide', hint: "Recommend remedies for..." },
-              { icon: BrainCircuit, label: 'How It Works', isDialog: true }
+              { icon: Activity, label: 'Symptom', hint: "I'm feeling..." },
+              { icon: Leaf, label: 'Herbal', hint: "Recommend remedies for..." },
+              { icon: BrainCircuit, label: 'Docs', isDialog: true }
             ].map((btn) => (
               <Button
                 key={btn.label}
@@ -278,9 +278,9 @@ export default function ChatInterface() {
                   trigger('nudge');
                   if (btn.hint) setInput(btn.hint);
                 }}
-                className="h-9 px-4 rounded-full bg-white/40 hover:bg-white text-slate-500 hover:text-primary border border-white/60 text-[10px] font-black uppercase tracking-[0.1em] transition-all"
+                className="h-8 sm:h-9 px-3 sm:px-4 rounded-full bg-white/40 hover:bg-white text-slate-500 hover:text-primary border border-white/60 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] transition-all"
               >
-                <btn.icon className="w-3.5 h-3.5 mr-2" /> {btn.label}
+                <btn.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1.5 sm:mr-2" /> {btn.label}
               </Button>
             ))}
           </div>
@@ -288,16 +288,16 @@ export default function ChatInterface() {
       </div>
 
       {/* AI Reasoning Sidebar - Premium Upgrade */}
-      <div className="lg:col-span-4 h-full">
-        <div className="glass-panel h-full rounded-[32px] flex flex-col overflow-hidden">
-          <div className="px-8 py-6 border-b border-white/40 bg-primary/5 flex items-center gap-3">
-            <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
-              <BrainCircuit className="w-5 h-5 text-primary" />
+      <div className="lg:col-span-4 h-[400px] lg:h-full">
+        <div className="glass-panel h-full rounded-[24px] sm:rounded-[32px] flex flex-col overflow-hidden">
+          <div className="px-6 py-4 sm:px-8 sm:py-6 border-b border-white/40 bg-primary/5 flex items-center gap-3">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+              <BrainCircuit className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             </div>
-            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-slate-800">Intelligence</h4>
+            <h4 className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] text-slate-800">Intelligence</h4>
           </div>
           
-          <div className="flex-1 p-8 overflow-hidden">
+          <div className="flex-1 p-6 sm:p-8 overflow-hidden">
             <AnimatePresence mode="wait">
               {selectedReasoning ? (
                 <motion.div
@@ -305,16 +305,16 @@ export default function ChatInterface() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="space-y-10 h-full overflow-y-auto pr-2 scrollbar-hide"
+                  className="space-y-6 sm:space-y-10 h-full overflow-y-auto pr-2 scrollbar-hide"
                 >
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Confidence Match</span>
-                      <span className="text-xl font-black text-primary tabular-nums">
+                      <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">Match</span>
+                      <span className="text-lg sm:text-xl font-black text-primary tabular-nums">
                         {Math.round((selectedReasoning.reasoning?.confidence || 0) * 100)}%
                       </span>
                     </div>
-                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 sm:h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${(selectedReasoning.reasoning?.confidence || 0) * 100}%` }}
@@ -324,30 +324,30 @@ export default function ChatInterface() {
                     </div>
                   </div>
 
-                  <div className="space-y-6">
-                    <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                  <div className="space-y-4 sm:space-y-6">
+                    <h5 className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
                        <Zap className="w-3 h-3" /> Logic Flow
                     </h5>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {selectedReasoning.reasoning?.steps.map((step, i) => (
-                        <div key={i} className="relative pl-8 group">
-                          <div className="absolute left-0 top-1 w-5 h-5 rounded-lg bg-white border border-slate-100 shadow-sm flex items-center justify-center text-[10px] font-black group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                        <div key={i} className="relative pl-7 sm:pl-8 group">
+                          <div className="absolute left-0 top-0.5 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-lg bg-white border border-slate-100 shadow-sm flex items-center justify-center text-[9px] sm:text-[10px] font-black group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                             {i + 1}
                           </div>
-                          <p className="text-[13px] font-medium text-slate-600 leading-relaxed">{step}</p>
+                          <p className="text-[12px] sm:text-[13px] font-medium text-slate-600 leading-relaxed">{step}</p>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {selectedReasoning.reasoning?.sources && (
-                    <div className="space-y-4">
-                       <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                         <ShieldCheck className="w-3 h-3" /> EVIDENCE BASE
+                    <div className="space-y-3 sm:space-y-4">
+                       <h5 className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                         <ShieldCheck className="w-3 h-3" /> EVIDENCE
                        </h5>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2">
                         {selectedReasoning.reasoning.sources.map((source, i) => (
-                          <Badge key={i} variant="outline" className="bg-white/40 border-white/60 text-[10px] font-bold px-3 py-1 rounded-lg lowercase tracking-tight">
+                          <Badge key={i} variant="outline" className="bg-white/40 border-white/60 text-[9px] sm:text-[10px] font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg lowercase tracking-tight">
                             {source}
                           </Badge>
                         ))}
@@ -356,13 +356,13 @@ export default function ChatInterface() {
                   )}
                 </motion.div>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center px-6">
-                  <div className="w-20 h-20 bg-slate-100/50 rounded-[28px] flex items-center justify-center mb-6 animate-pulse">
-                    <BrainCircuit className="w-10 h-10 text-slate-300" strokeWidth={1.5} />
+                <div className="h-full flex flex-col items-center justify-center text-center px-4 sm:px-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100/50 rounded-[24px] sm:rounded-[28px] flex items-center justify-center mb-4 sm:mb-6 animate-pulse">
+                    <BrainCircuit className="w-8 h-8 sm:w-10 sm:h-10 text-slate-300" strokeWidth={1.5} />
                   </div>
-                  <h5 className="text-base font-black text-slate-900 mb-2">Neural Analysis</h5>
-                  <p className="text-sm font-medium text-slate-400 leading-relaxed">
-                    Select any message to unveil the clinical logic and reasoning behind the AI's response.
+                  <h5 className="text-sm sm:text-base font-black text-slate-900 mb-2">Neural Analysis</h5>
+                  <p className="text-xs sm:text-sm font-medium text-slate-400 leading-relaxed">
+                    Select a message to unveil the clinical logic behind the AI's response.
                   </p>
                 </div>
               )}
