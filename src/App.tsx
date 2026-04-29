@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useWebHaptics } from 'web-haptics/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Activity, MessageSquare, Camera, Shield, Menu, X, Plus, Settings, LogOut, Leaf } from 'lucide-react';
 import ChatInterface from './components/chat/ChatInterface';
@@ -20,6 +21,7 @@ const SIDEBAR_ITEMS = [
 
 export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { trigger } = useWebHaptics();
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex font-sans text-slate-900">
@@ -34,7 +36,10 @@ export default function App() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 bg-black/30 lg:hidden"
             aria-hidden="true"
-            onClick={() => setIsSidebarOpen(false)}
+            onClick={() => {
+              trigger('nudge');
+              setIsSidebarOpen(false);
+            }}
           />
         )}
       </AnimatePresence>
@@ -59,13 +64,16 @@ export default function App() {
                 >
                   <Activity className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="font-bold text-xl tracking-tight">HealthNet</h1>
+                <h1 className="font-bold text-xl tracking-tight" translate="no">HealthNet</h1>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 className="lg:hidden min-w-[44px] min-h-[44px]"
-                onClick={() => setIsSidebarOpen(false)}
+                onClick={() => {
+                  trigger('nudge');
+                  setIsSidebarOpen(false);
+                }}
                 aria-label="Close sidebar"
               >
                 <X className="w-5 h-5" aria-hidden="true" />
@@ -86,7 +94,7 @@ export default function App() {
                 >
                   <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 h-11 text-slate-600 hover:bg-slate-50 hover:text-slate-900 active:scale-[0.98] transition-all duration-150"
+                    className="w-full justify-start gap-3 h-11 text-slate-600 hover:bg-slate-50 hover:text-slate-900 active:scale-[0.98] transition duration-150"
                   >
                     <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
                     {label}
@@ -138,7 +146,10 @@ export default function App() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsSidebarOpen(true)}
+                onClick={() => {
+                  trigger('nudge');
+                  setIsSidebarOpen(true);
+                }}
                 aria-label="Open sidebar"
                 className="min-w-[44px] min-h-[44px]"
               >
@@ -176,7 +187,7 @@ export default function App() {
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 max-w-7xl mx-auto w-full">
-          <Tabs defaultValue="chat" className="space-y-6">
+          <Tabs defaultValue="chat" className="space-y-6" onValueChange={() => trigger('nudge')}>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h2 className="text-3xl font-bold tracking-tight">Health Dashboard</h2>
@@ -185,25 +196,25 @@ export default function App() {
               <TabsList className="bg-white border p-1 h-12 rounded-xl shadow-sm">
                 <TabsTrigger
                   value="chat"
-                  className="rounded-lg px-4 md:px-6 gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-150"
+                  className="rounded-lg px-4 md:px-6 gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition duration-150"
                 >
                   <MessageSquare className="w-4 h-4" aria-hidden="true" /> Chat
                 </TabsTrigger>
                 <TabsTrigger
                   value="dashboard"
-                  className="rounded-lg px-4 md:px-6 gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-150"
+                  className="rounded-lg px-4 md:px-6 gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition duration-150"
                 >
                   <Activity className="w-4 h-4" aria-hidden="true" /> Vitals
                 </TabsTrigger>
                 <TabsTrigger
                   value="imaging"
-                  className="rounded-lg px-4 md:px-6 gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-150"
+                  className="rounded-lg px-4 md:px-6 gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition duration-150"
                 >
                   <Camera className="w-4 h-4" aria-hidden="true" /> Imaging
                 </TabsTrigger>
                 <TabsTrigger
                   value="herbal"
-                  className="rounded-lg px-4 md:px-6 gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-150"
+                  className="rounded-lg px-4 md:px-6 gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition duration-150"
                 >
                   <Leaf className="w-4 h-4" aria-hidden="true" /> Herbal
                 </TabsTrigger>

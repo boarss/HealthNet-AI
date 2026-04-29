@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useWebHaptics } from 'web-haptics/react';
 import { Send, User, Bot, AlertCircle, Info, Leaf, Activity, BrainCircuit, ShieldCheck, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +15,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 
 export default function ChatInterface() {
   const shouldReduceMotion = useReducedMotion();
+  const { trigger } = useWebHaptics();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -70,6 +72,7 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+    trigger('success');
 
     // Save user message to Supabase
     supabaseService.saveMessage('main-session', userMessage).catch(console.error);
@@ -249,7 +252,7 @@ export default function ChatInterface() {
               disabled={isLoading || !input.trim()}
               size="icon"
               aria-label="Send message"
-              className="min-w-[44px] min-h-[44px] transition-all duration-150 active:scale-95"
+              className="min-w-[44px] min-h-[44px] transition duration-150 active:scale-95"
             >
               <Send className="w-4 h-4" aria-hidden="true" />
             </Button>
@@ -258,7 +261,10 @@ export default function ChatInterface() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setInput("I'd like to use the symptom checker. I'm feeling…")}
+              onClick={() => {
+                trigger('nudge');
+                setInput("I'd like to use the symptom checker. I'm feeling…");
+              }}
               className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
             >
               <Activity className="w-3 h-3" aria-hidden="true" /> Symptom Checker
@@ -266,20 +272,26 @@ export default function ChatInterface() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setInput('Can you recommend some natural or herbal remedies for…')}
+              onClick={() => {
+                trigger('nudge');
+                setInput('Can you recommend some natural or herbal remedies for…');
+              }}
               className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
             >
               <Leaf className="w-3 h-3" aria-hidden="true" /> Herbal Guide
             </Button>
             <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
-                >
-                  <Info className="w-3 h-3" aria-hidden="true" /> How It Works
-                </Button>
+              <DialogTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => trigger('nudge')}
+                    className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
+                  />
+                }
+              >
+                <Info className="w-3 h-3" aria-hidden="true" /> How It Works
               </DialogTrigger>
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
