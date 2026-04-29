@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Message } from '@/src/types';
 import { getChatResponse } from '@/src/services/geminiService';
+import { supabaseService } from '@/src/services/supabaseService';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 
 export default function ChatInterface() {
@@ -33,6 +34,29 @@ export default function ChatInterface() {
     }
   }, [messages]);
 
+  // Load chat history on mount
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const history = await supabaseService.getChatHistory('main-session');
+        if (history && history.length > 0) {
+          const formattedHistory: Message[] = history.map(h => ({
+            id: h.id.toString(),
+            role: h.role,
+            content: h.content,
+            timestamp: new Date(h.timestamp).getTime(),
+            type: h.type,
+            reasoning: h.reasoning
+          }));
+          setMessages(formattedHistory);
+        }
+      } catch (error) {
+        console.error('Error loading chat history:', error);
+      }
+    };
+    loadHistory();
+  }, []);
+
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -46,6 +70,9 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+
+    // Save user message to Supabase
+    supabaseService.saveMessage('main-session', userMessage).catch(console.error);
 
     try {
       const chatHistory = messages.map((m) => ({
@@ -65,6 +92,9 @@ export default function ChatInterface() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
+      
+      // Save assistant message to Supabase
+      supabaseService.saveMessage('main-session', assistantMessage).catch(console.error);
     } catch (error) {
       console.error(error);
       const errorMessage: Message = {
@@ -225,23 +255,31 @@ export default function ChatInterface() {
             </Button>
           </div>
           <div className="mt-3 flex items-center justify-center gap-4">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setInput("I'd like to use the symptom checker. I'm feeling…")}
-              className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors duration-150 min-h-[32px] px-1"
+              className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
             >
               <Activity className="w-3 h-3" aria-hidden="true" /> Symptom Checker
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setInput('Can you recommend some natural or herbal remedies for…')}
-              className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors duration-150 min-h-[32px] px-1"
+              className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
             >
               <Leaf className="w-3 h-3" aria-hidden="true" /> Herbal Guide
-            </button>
+            </Button>
             <Dialog>
               <DialogTrigger asChild>
-                <button className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors duration-150 min-h-[32px] px-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
+                >
                   <Info className="w-3 h-3" aria-hidden="true" /> How It Works
-                </button>
+                </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>

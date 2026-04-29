@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Activity, Heart, Thermometer, User, Clock, Calendar } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
+import { useEffect, useState } from 'react';
+import { supabaseService } from '@/src/services/supabaseService';
 
 const vitals = [
   { label: 'Heart Rate', value: '72', unit: 'bpm', icon: Heart, color: 'text-red-500', bg: 'bg-red-50', trend: 'Normal' },
@@ -27,6 +29,25 @@ const vaccinations = [
 
 export default function PatientDashboard() {
   const shouldReduceMotion = useReducedMotion();
+  const [patientVitals, setPatientVitals] = useState(vitals);
+
+  useEffect(() => {
+    const loadVitals = async () => {
+      try {
+        const data = await supabaseService.getPatientData('patient-123');
+        if (data && data.vital_signs) {
+          const updatedVitals = vitals.map(v => {
+            const val = data.vital_signs[v.label === 'Heart Rate' ? 'heartRate' : v.label === 'Blood Pressure' ? 'bloodPressure' : 'temperature'];
+            return { ...v, value: val.toString() };
+          });
+          setPatientVitals(updatedVitals);
+        }
+      } catch (error) {
+        console.error('Error fetching patient vitals:', error);
+      }
+    };
+    loadVitals();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -41,7 +62,7 @@ export default function PatientDashboard() {
           aria-label="Real-time vitals overview"
           aria-live="polite"
         >
-          {vitals.map((vital, i) => (
+          {patientVitals.map((vital, i) => (
             <motion.div
               key={vital.label}
               initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
