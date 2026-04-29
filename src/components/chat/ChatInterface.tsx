@@ -122,276 +122,254 @@ export default function ChatInterface() {
       };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
-      <Card className="lg:col-span-2 flex flex-col border-none shadow-lg bg-white/50 backdrop-blur-sm overflow-hidden">
-        <CardHeader className="border-b bg-primary/5 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary rounded-lg" aria-hidden="true">
-                <Bot className="w-5 h-5 text-primary-foreground" />
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full min-h-[600px] relative z-10">
+      <div className="lg:col-span-8 flex flex-col h-full bg-white/40 ring-1 ring-white/60 backdrop-blur-3xl rounded-[32px] shadow-2xl shadow-slate-200/50 overflow-hidden">
+        {/* Chat Header - Higher contrast and cleaner typography */}
+        <div className="px-8 py-6 border-b border-white/40 flex items-center justify-between bg-white/20">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-primary/5">
+                <Bot className="w-6 h-6 text-white" />
               </div>
-              <div>
-                <CardTitle className="text-lg font-semibold">HealthNet Assistant</CardTitle>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="outline" className="text-[10px] uppercase tracking-wider h-4">Clinical Support</Badge>
-                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" aria-hidden="true" />
-                    <span className="text-[10px] text-muted-foreground uppercase font-medium">Online</span>
-                  </div>
+              <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shimmer" />
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-slate-900 leading-none">HealthNet AI</h3>
+              <div className="flex items-center gap-2 mt-2">
+                <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-none px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">Clinical Expert</Badge>
+                <div className="flex items-center gap-1.5 ml-1">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                  <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest leading-none">Active</span>
                 </div>
               </div>
             </div>
           </div>
-        </CardHeader>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/50 transition-colors h-10 w-10">
+              <Info className="w-4.5 h-4.5 text-slate-400" />
+            </Button>
+          </div>
+        </div>
 
-        {/* Message log — aria-live for screen readers */}
-        <CardContent className="flex-1 overflow-hidden p-0 relative">
-          <ScrollArea className="h-full p-6" ref={scrollRef}>
+        {/* Message Log */}
+        <div className="flex-1 overflow-hidden relative">
+          <ScrollArea className="h-full px-8 py-8" ref={scrollRef}>
             <div
               role="log"
               aria-label="Conversation history"
               aria-live="polite"
-              aria-relevant="additions"
-              className="space-y-6"
+              className="space-y-8"
             >
               <AnimatePresence initial={false}>
-                {messages.map((m) => (
+                {messages.map((m, i) => (
                   <motion.div
                     key={m.id}
-                    {...(shouldReduceMotion ? { initial: false } : { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 } })}
-                    transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ 
+                      type: 'spring', 
+                      stiffness: 400, 
+                      damping: 30,
+                      delay: 0.05 
+                    }}
                     className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div className={`flex gap-3 max-w-[90%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                      <Avatar className="w-8 h-8 border shrink-0">
-                        <AvatarFallback
-                          className={m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}
-                          aria-hidden="true"
-                        >
-                          {m.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className={`space-y-1 ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
+                    <div className={`flex gap-4 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} gap-2`}>
                         <div
-                          className={`rounded-2xl px-4 py-2.5 text-sm shadow-sm relative group ${
+                          className={`group relative px-6 py-4 rounded-[24px] text-[15px] font-medium leading-relaxed transition-all duration-300 ${
                             m.role === 'user'
-                              ? 'bg-primary text-primary-foreground rounded-tr-none'
-                              : 'bg-white border rounded-tl-none'
+                              ? 'bg-slate-900 text-white rounded-tr-none shadow-xl shadow-slate-200'
+                              : 'bg-white text-slate-800 rounded-tl-none border border-white/80 shadow-md shadow-slate-100/50'
                           }`}
                         >
                           {m.content}
                           {m.reasoning && (
                             <button
-                              onClick={() => setSelectedReasoning(m)}
-                              className="absolute -right-2 -bottom-2 bg-white border shadow-sm rounded-full p-1 text-primary hover:bg-primary hover:text-white transition-colors duration-150 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 min-w-[28px] min-h-[28px] flex items-center justify-center"
-                              aria-label="View AI reasoning for this response"
+                              onClick={() => {
+                                trigger('nudge');
+                                setSelectedReasoning(m);
+                              }}
+                              className="absolute -right-3 -bottom-3 bg-white border border-slate-100 shadow-xl rounded-2xl p-2 text-primary hover:bg-primary hover:text-white transition-all transform hover:scale-110 active:scale-95 opacity-0 group-hover:opacity-100"
                             >
-                              <BrainCircuit className="w-3 h-3" aria-hidden="true" />
+                              <BrainCircuit className="w-4 h-4" />
                             </button>
                           )}
                         </div>
-                        <time
-                          className="text-[10px] text-muted-foreground px-1 block"
-                          dateTime={new Date(m.timestamp).toISOString()}
-                        >
-                          {new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' }).format(m.timestamp)}
-                        </time>
+                        <div className="flex items-center gap-2 px-1">
+                          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+                            {new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' }).format(m.timestamp)}
+                          </span>
+                          {m.role === 'assistant' && (
+                            <div className="flex items-center gap-1 opacity-40">
+                              <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter leading-none">Verified</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
 
-              {/* Typing / Loading indicator */}
+              {/* Enhanced Loading Indicator */}
               {isLoading && (
-                <div className="flex justify-start" aria-label="HealthNet AI is thinking…" role="status">
-                  <div className="flex gap-3">
-                    <Avatar className="w-8 h-8 border shrink-0">
-                      <AvatarFallback className="bg-muted" aria-hidden="true">
-                        <Bot className="w-4 h-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="bg-white border rounded-2xl px-4 py-3 rounded-tl-none">
-                      <div className="flex gap-1.5 items-center">
-                        {[0, 1, 2].map((i) => (
-                          <span
-                            key={i}
-                            className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"
-                            style={{ animationDelay: `${i * 0.15}s`, animationDuration: '0.9s' }}
-                            aria-hidden="true"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-        </CardContent>
-
-        {/* Input area */}
-        <div className="p-4 border-t bg-white/80">
-          <div className="flex gap-2" role="form" aria-label="Send a message">
-            <Input
-              ref={inputRef}
-              id="chat-input"
-              name="message"
-              placeholder="Describe your symptoms or ask a health question…"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              className="flex-1 bg-muted/50 border-none focus-visible:ring-1"
-              aria-label="Message input"
-              autoComplete="off"
-              spellCheck={false}
-              disabled={isLoading}
-            />
-            <Button
-              onClick={handleSend}
-              disabled={isLoading || !input.trim()}
-              size="icon"
-              aria-label="Send message"
-              className="min-w-[44px] min-h-[44px] transition duration-150 active:scale-95"
-            >
-              <Send className="w-4 h-4" aria-hidden="true" />
-            </Button>
-          </div>
-          <div className="mt-3 flex items-center justify-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                trigger('nudge');
-                setInput("I'd like to use the symptom checker. I'm feeling…");
-              }}
-              className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
-            >
-              <Activity className="w-3 h-3" aria-hidden="true" /> Symptom Checker
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                trigger('nudge');
-                setInput('Can you recommend some natural or herbal remedies for…');
-              }}
-              className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
-            >
-              <Leaf className="w-3 h-3" aria-hidden="true" /> Herbal Guide
-            </Button>
-            <Dialog>
-              <DialogTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => trigger('nudge')}
-                    className="text-[10px] text-muted-foreground hover:text-primary gap-1 h-8 px-2"
-                  />
-                }
-              >
-                <Info className="w-3 h-3" aria-hidden="true" /> How It Works
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <BrainCircuit className="w-5 h-5 text-primary" aria-hidden="true" /> How HealthNet AI Works
-                  </DialogTitle>
-                  <DialogDescription>
-                    Understanding our clinical decision support system.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-6 py-4">
-                  {[
-                    { icon: Zap, color: 'blue', title: 'Processing Engine', body: 'We use Large Language Models (LLMs) combined with rule-based medical protocols to analyze your symptoms against thousands of clinical patterns.' },
-                    { icon: ShieldCheck, color: 'green', title: 'Safety Protocols', body: 'Our system is programmed with “Emergency Redlines.” If life-threatening symptoms are detected, the AI is forced to bypass standard advice and recommend immediate emergency care.' },
-                    { icon: BrainCircuit, color: 'purple', title: 'Explainable Reasoning', body: 'Every diagnosis includes a “Reasoning Path” that shows you exactly which symptoms led to the conclusion, ensuring transparency in medical guidance.' },
-                  ].map(({ icon: Icon, color, title, body }) => (
-                    <div key={title} className="flex gap-4">
-                      <div className={`p-2 bg-${color}-50 rounded-lg h-fit shrink-0`} aria-hidden="true">
-                        <Icon className={`w-5 h-5 text-${color}-500`} />
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-bold mb-1">{title}</h4>
-                        <p className="text-xs text-muted-foreground leading-relaxed">{body}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      </Card>
-
-      {/* AI Explainability Panel */}
-      <Card className="hidden lg:flex flex-col border-none shadow-lg bg-white/50 backdrop-blur-sm overflow-hidden">
-        <CardHeader className="border-b bg-primary/5 px-6 py-4">
-          <CardTitle className="text-sm font-bold flex items-center gap-2">
-            <BrainCircuit className="w-4 h-4 text-primary" aria-hidden="true" /> AI Explainability
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 p-6 overflow-hidden">
-          <AnimatePresence mode="wait">
-            {selectedReasoning ? (
-              <motion.div
-                key={selectedReasoning.id}
-                initial={shouldReduceMotion ? false : { opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
-                className="space-y-6 h-full overflow-y-auto"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Confidence Score</span>
-                    <Badge variant="secondary" className="text-xs tabular-nums">
-                      {Math.round((selectedReasoning.reasoning?.confidence || 0) * 100)}%
-                    </Badge>
-                  </div>
-                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round((selectedReasoning.reasoning?.confidence || 0) * 100)} aria-valuemin={0} aria-valuemax={100} aria-label="AI Confidence">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(selectedReasoning.reasoning?.confidence || 0) * 100}%` }}
-                      transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
-                      className="h-full bg-primary"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Reasoning Steps</span>
-                  <div className="space-y-3">
-                    {selectedReasoning.reasoning?.steps.map((step, i) => (
-                      <div key={i} className="flex gap-3">
-                        <div className="w-5 h-5 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center shrink-0 font-bold" aria-hidden="true">
-                          {i + 1}
-                        </div>
-                        <p className="text-xs text-slate-600 leading-relaxed">{step}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                {selectedReasoning.reasoning?.sources && (
-                  <div className="space-y-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Evidence Base</span>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedReasoning.reasoning.sources.map((source, i) => (
-                        <Badge key={i} variant="outline" className="text-[10px] font-normal">{source}</Badge>
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }} 
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex justify-start pt-2"
+                >
+                  <div className="bg-white/60 border border-white rounded-[20px] px-5 py-3.5 shadow-sm">
+                    <div className="flex gap-2">
+                      {[0, 1, 2].map((i) => (
+                        <span
+                          key={i}
+                          className="w-1.5 h-1.5 bg-primary rounded-full shimmer"
+                          style={{ 
+                            animation: `shimmer 1.5s infinite ease-in-out`,
+                            animationDelay: `${i * 0.2}s` 
+                          }}
+                        />
                       ))}
                     </div>
                   </div>
-                )}
-              </motion.div>
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground gap-4">
-                <BrainCircuit className="w-12 h-12 opacity-10" aria-hidden="true" />
-                <p className="text-sm">                  Select a message to see the AI’s reasoning process.</p>
-              </div>
-            )}
-          </AnimatePresence>
-        </CardContent>
-      </Card>
+                </motion.div>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Input Bar - Floating & Premium */}
+        <div className="p-8 mt-auto border-t border-white/40 bg-white/20">
+          <div className="relative group max-w-4xl mx-auto">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-emerald-500/20 rounded-[32px] blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
+            <div className="relative flex items-center gap-3 bg-white p-3 rounded-[28px] border border-white/50 shadow-xl focus-within:shadow-2xl focus-within:shadow-primary/5 transition-all duration-300">
+              <Input
+                ref={inputRef}
+                placeholder="Ask HealthNet anything..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                className="flex-1 bg-transparent border-none focus-visible:ring-0 text-slate-900 placeholder:text-slate-400 placeholder:font-medium h-12 px-5 text-base"
+                disabled={isLoading}
+              />
+              <Button
+                onClick={handleSend}
+                disabled={isLoading || !input.trim()}
+                className="h-12 px-8 rounded-2xl bg-slate-900 hover:bg-black text-white font-black uppercase tracking-widest text-[11px] transition-all transform active:scale-95 shadow-lg"
+              >
+                Send <Send className="w-3.5 h-3.5 ml-2" />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            {[
+              { icon: Activity, label: 'Symptom Checker', hint: "I'm feeling..." },
+              { icon: Leaf, label: 'Herbal Guide', hint: "Recommend remedies for..." },
+              { icon: BrainCircuit, label: 'How It Works', isDialog: true }
+            ].map((btn) => (
+              <Button
+                key={btn.label}
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  trigger('nudge');
+                  if (btn.hint) setInput(btn.hint);
+                }}
+                className="h-9 px-4 rounded-full bg-white/40 hover:bg-white text-slate-500 hover:text-primary border border-white/60 text-[10px] font-black uppercase tracking-[0.1em] transition-all"
+              >
+                <btn.icon className="w-3.5 h-3.5 mr-2" /> {btn.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* AI Reasoning Sidebar - Premium Upgrade */}
+      <div className="lg:col-span-4 h-full">
+        <div className="glass-panel h-full rounded-[32px] flex flex-col overflow-hidden">
+          <div className="px-8 py-6 border-b border-white/40 bg-primary/5 flex items-center gap-3">
+            <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+              <BrainCircuit className="w-5 h-5 text-primary" />
+            </div>
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-slate-800">Intelligence</h4>
+          </div>
+          
+          <div className="flex-1 p-8 overflow-hidden">
+            <AnimatePresence mode="wait">
+              {selectedReasoning ? (
+                <motion.div
+                  key={selectedReasoning.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-10 h-full overflow-y-auto pr-2 scrollbar-hide"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Confidence Match</span>
+                      <span className="text-xl font-black text-primary tabular-nums">
+                        {Math.round((selectedReasoning.reasoning?.confidence || 0) * 100)}%
+                      </span>
+                    </div>
+                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(selectedReasoning.reasoning?.confidence || 0) * 100}%` }}
+                        transition={{ duration: 1, ease: 'circOut' }}
+                        className="h-full bg-gradient-to-r from-primary to-emerald-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                       <Zap className="w-3 h-3" /> Logic Flow
+                    </h5>
+                    <div className="space-y-4">
+                      {selectedReasoning.reasoning?.steps.map((step, i) => (
+                        <div key={i} className="relative pl-8 group">
+                          <div className="absolute left-0 top-1 w-5 h-5 rounded-lg bg-white border border-slate-100 shadow-sm flex items-center justify-center text-[10px] font-black group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                            {i + 1}
+                          </div>
+                          <p className="text-[13px] font-medium text-slate-600 leading-relaxed">{step}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {selectedReasoning.reasoning?.sources && (
+                    <div className="space-y-4">
+                       <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                         <ShieldCheck className="w-3 h-3" /> EVIDENCE BASE
+                       </h5>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedReasoning.reasoning.sources.map((source, i) => (
+                          <Badge key={i} variant="outline" className="bg-white/40 border-white/60 text-[10px] font-bold px-3 py-1 rounded-lg lowercase tracking-tight">
+                            {source}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-center px-6">
+                  <div className="w-20 h-20 bg-slate-100/50 rounded-[28px] flex items-center justify-center mb-6 animate-pulse">
+                    <BrainCircuit className="w-10 h-10 text-slate-300" strokeWidth={1.5} />
+                  </div>
+                  <h5 className="text-base font-black text-slate-900 mb-2">Neural Analysis</h5>
+                  <p className="text-sm font-medium text-slate-400 leading-relaxed">
+                    Select any message to unveil the clinical logic and reasoning behind the AI's response.
+                  </p>
+                </div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

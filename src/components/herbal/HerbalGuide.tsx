@@ -98,12 +98,13 @@ export default function HerbalGuide() {
       {/* Search + Filters */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div className="relative w-full md:w-80">
+          <label htmlFor="herbal-search" className="sr-only">Search herbal remedies</label>
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
           <Input
             id="herbal-search"
             name="herbal-search"
             placeholder="Search remedies or symptoms…"
-            className="pl-10 bg-white border-none shadow-sm"
+            className="pl-10 bg-white border-none shadow-sm h-11 rounded-full focus-visible:ring-2 focus-visible:ring-primary/50"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             aria-label="Search remedies or symptoms"

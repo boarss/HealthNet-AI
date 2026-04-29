@@ -50,14 +50,13 @@ export default function PatientDashboard() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      {/* Vitals */}
+      {/* Vitals Section - Refined Glass Cards */}
       <section aria-label="Patient vitals" role="region">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 px-1">
-          Current Vitals
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-5 px-1">
+          Real-time Biomarkers
         </h3>
         <div
-          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
           role="status"
           aria-label="Real-time vitals overview"
           aria-live="polite"
@@ -68,99 +67,121 @@ export default function PatientDashboard() {
               initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
-                delay: shouldReduceMotion ? 0 : i * 0.08,
-                duration: 0.3,
+                delay: shouldReduceMotion ? 0 : i * 0.1,
+                duration: 0.4,
                 ease: [0.25, 1, 0.5, 1],
               }}
             >
-              <Card className="border-none shadow-sm card-interactive overflow-hidden">
-                <CardContent className="p-4 flex items-center gap-4">
-                  <div className={`p-3 rounded-xl ${vital.bg} shrink-0`} aria-hidden="true">
+              <div className="glass-panel card-premium p-6 flex flex-col gap-5 rounded-[28px]">
+                <div className="flex items-center justify-between">
+                  <div className={`p-2.5 rounded-2xl ${vital.bg} ring-4 ring-white/30 shrink-0`} aria-hidden="true">
                     <vital.icon className={`w-5 h-5 ${vital.color}`} />
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{vital.label}</p>
-                    <p className="text-xl font-bold tabular-nums" aria-label={`${vital.label}: ${vital.value} ${vital.unit}`}>
-                      {vital.value}
-                      <span className="text-sm font-normal text-muted-foreground ml-1">{vital.unit}</span>
-                    </p>
-                  </div>
-                  <Badge variant="secondary" className="ml-auto shrink-0 text-[10px] bg-green-50 text-green-700">
+                  <Badge className="bg-emerald-50 text-emerald-600 border-none px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider">
                     {vital.trend}
                   </Badge>
-                </CardContent>
-              </Card>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{vital.label}</p>
+                  <p className="text-3xl font-black text-slate-900 tabular-nums flex items-baseline gap-1.5" aria-label={`${vital.label}: ${vital.value} ${vital.unit}`}>
+                    {vital.value}
+                    <span className="text-sm font-bold text-slate-300 uppercase">{vital.unit}</span>
+                  </p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Conditions & Medications */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-none shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <User className="w-4 h-4 text-primary" aria-hidden="true" /> Long-term Conditions
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
+      {/* Conditions & Medications - Staggered Glass Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+        <motion.div
+           initial={{ opacity: 0, x: -20 }}
+           animate={{ opacity: 1, x: 0 }}
+           transition={{ delay: 0.3 }}
+           className="glass-panel rounded-[32px] overflow-hidden"
+        >
+          <div className="p-8 border-b border-white/40 bg-white/20 flex items-center gap-3">
+             <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+                <User className="w-5 h-5 text-primary" aria-hidden="true" />
+             </div>
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-800">Cronic Conditions</h3>
+          </div>
+          <div className="p-8 space-y-3">
             {conditions.map((c) => (
-              <div key={c} className="flex items-center justify-between p-2.5 rounded-lg bg-muted/30">
-                <span className="text-sm font-medium">{c}</span>
-                <Badge variant="secondary" className="text-[10px]" aria-label={`${c}: Active`}>Active</Badge>
+              <div key={c} className="flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-white/60 group hover:bg-white transition-all duration-300 cursor-default">
+                <span className="text-sm font-bold text-slate-700">{c}</span>
+                <Badge className="bg-emerald-100/50 text-emerald-700 border-none px-3 font-bold text-[10px]">active</Badge>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
 
-        <Card className="border-none shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" aria-hidden="true" /> Current Medications
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
+        <motion.div
+           initial={{ opacity: 0, x: 20 }}
+           animate={{ opacity: 1, x: 0 }}
+           transition={{ delay: 0.4 }}
+           className="glass-panel rounded-[32px] overflow-hidden"
+        >
+          <div className="p-8 border-b border-white/40 bg-white/20 flex items-center gap-3">
+             <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+                <Clock className="w-5 h-5 text-primary" aria-hidden="true" />
+             </div>
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-800">Medications</h3>
+          </div>
+          <div className="p-8 space-y-3">
             {medications.map((m) => (
-              <div key={m} className="flex items-center justify-between p-2.5 rounded-lg bg-muted/30">
-                <span className="text-sm font-medium tabular-nums">{m}</span>
-                <Badge variant="outline" className="text-[10px]" aria-label={`${m}: Daily`}>Daily</Badge>
+              <div key={m} className="flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-white/60 group hover:bg-white transition-all duration-300 cursor-default">
+                <span className="text-sm font-bold text-slate-700 tabular-nums">{m}</span>
+                <Badge variant="outline" className="border-slate-200 text-slate-400 font-bold text-[10px] px-3 uppercase tracking-tighter">Daily</Badge>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
       </div>
 
-      {/* Vaccination Schedule */}
-      <Card className="border-none shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-primary" aria-hidden="true" /> Vaccination Schedule
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-4" role="list" aria-label="Vaccination history and upcoming">
+      {/* Vaccination Schedule - Full Width Glass */}
+      <motion.div
+         initial={{ opacity: 0, y: 30 }}
+         animate={{ opacity: 1, y: 0 }}
+         transition={{ delay: 0.5 }}
+         className="glass-panel rounded-[40px] overflow-hidden"
+      >
+        <div className="p-8 border-b border-white/40 bg-white/20 flex items-center gap-3">
+           <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center ring-4 ring-primary/5">
+              <Calendar className="w-5 h-5 text-primary" aria-hidden="true" />
+           </div>
+           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-800">Vaccination History</h3>
+        </div>
+        <div className="p-10">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-8" role="list">
             {vaccinations.map((v) => (
-              <li key={v.name} className="flex items-center gap-4">
+              <li key={v.name} className="flex items-center gap-6 group">
                 <div
-                  className={`w-2.5 h-2.5 rounded-full shrink-0 ${v.status === 'completed' ? 'bg-green-500' : 'bg-orange-400'}`}
+                  className={`w-4 h-4 rounded-full ring-8 transition-all duration-500 ${
+                    v.status === 'completed' 
+                      ? 'bg-emerald-500 ring-emerald-500/10 group-hover:ring-emerald-500/20' 
+                      : 'bg-orange-400 ring-orange-500/10 group-hover:ring-orange-500/20'
+                  }`}
                   aria-hidden="true"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{v.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {v.status === 'completed' ? `Completed: ${v.date}` : `Due: ${v.date}`}
+                  <p className="text-base font-black text-slate-900 group-hover:text-primary transition-colors">{v.name}</p>
+                  <p className="text-sm font-medium text-slate-400 mt-1">
+                    {v.status === 'completed' ? `Administered on ${v.date}` : `Scheduled for ${v.date}`}
                   </p>
                 </div>
                 {v.status === 'upcoming' && (
-                  <Badge variant="outline" className="text-orange-500 border-orange-200 shrink-0" aria-label="Vaccination upcoming">
+                  <Badge className="bg-orange-100/50 text-orange-600 border-none font-black text-[10px] px-4 py-1.5 rounded-full uppercase tracking-widest">
                     Upcoming
                   </Badge>
                 )}
               </li>
             ))}
           </ul>
-        </CardContent>
-      </Card>
+        </div>
+      </motion.div>
     </div>
   );
 }
