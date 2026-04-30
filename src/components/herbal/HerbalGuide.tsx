@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Leaf, Search, AlertCircle } from 'lucide-react';
+import { Leaf, Search, AlertCircle, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { useWebHaptics } from 'web-haptics/react';
 
 interface Remedy {
   id: string;
@@ -82,6 +83,7 @@ export default function HerbalGuide() {
   const shouldReduceMotion = useReducedMotion();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { trigger } = useWebHaptics();
 
   const filteredRemedies = REMEDIES.filter(
     (r) =>
@@ -94,49 +96,58 @@ export default function HerbalGuide() {
   const categories = Array.from(new Set(REMEDIES.map((r) => r.category)));
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      {/* Search + Filters */}
-      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-start lg:items-center justify-between">
-        <div className="relative w-full lg:w-96 group">
+    <div className="space-y-6 sm:space-y-10">
+      {/* Search + Filters - Premium Segmented Controls */}
+      <div className="flex flex-col xl:flex-row gap-6 items-start xl:items-center justify-between">
+        <div className="relative w-full xl:w-[420px] group">
           <label htmlFor="herbal-search" className="sr-only">Search herbal remedies</label>
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-primary transition-colors pointer-events-none" aria-hidden="true" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-primary transition-all duration-300 pointer-events-none group-focus-within:scale-110" aria-hidden="true" />
           <Input
             id="herbal-search"
             name="herbal-search"
-            placeholder="Search herbal remedies..."
-            className="pl-12 bg-white border-none shadow-glass h-12 sm:h-14 rounded-2xl sm:rounded-3xl focus-visible:ring-2 focus-visible:ring-primary/20 text-sm font-medium"
+            placeholder="Search remedies or symptoms..."
+            className="pl-12 bg-white/60 backdrop-blur-md border border-white/50 shadow-glass h-12 sm:h-14 rounded-2xl sm:rounded-[24px] focus-visible:ring-4 focus-visible:ring-primary/10 transition-all text-sm font-bold placeholder:text-slate-400"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             aria-label="Search remedies or symptoms"
             autoComplete="off"
           />
         </div>
-        <div
-          className="flex flex-wrap gap-2 sm:gap-3 w-full lg:w-auto"
+        
+        <div 
+          className="bg-slate-200/40 p-1.5 h-auto rounded-[20px] gap-1 backdrop-blur-md overflow-x-auto no-scrollbar max-w-full flex items-center border border-white/50 shadow-inner relative"
           role="group"
           aria-label="Filter by category"
         >
-          <Button
-            variant={selectedCategory === null ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSelectedCategory(null)}
-            className="rounded-full h-8 sm:h-10 px-4 sm:px-6 font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all active:scale-95"
-            aria-pressed={selectedCategory === null}
-          >
-            All
-          </Button>
-          {categories.map((cat) => (
-            <Button
-              key={cat}
-              variant={selectedCategory === cat ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory(cat)}
-              className="rounded-full h-8 sm:h-10 px-4 sm:px-6 font-bold text-[10px] sm:text-xs uppercase tracking-widest transition-all active:scale-95"
-              aria-pressed={selectedCategory === cat}
-            >
-              {cat}
-            </Button>
-          ))}
+          {[null, ...categories].map((cat) => {
+            const isSelected = selectedCategory === cat;
+            return (
+              <button
+                key={cat || 'all'}
+                onClick={() => {
+                  trigger('nudge');
+                  setSelectedCategory(cat);
+                }}
+                className={`relative px-5 py-2.5 rounded-[14px] text-xs sm:text-[13px] font-black uppercase tracking-widest transition-all duration-300 z-10 active:scale-95 whitespace-nowrap ${
+                  isSelected ? 'text-primary' : 'text-slate-500 hover:text-slate-700'
+                }`}
+                aria-pressed={isSelected}
+              >
+                <span className="relative z-20 flex items-center gap-2">
+                  {!cat && <Sparkles className={`w-3 h-3 ${isSelected ? 'text-primary' : 'text-slate-400'}`} />}
+                  {cat || 'All Remedies'}
+                </span>
+                
+                {isSelected && (
+                  <motion.div
+                    layoutId="category-pill"
+                    className="absolute inset-0 bg-white shadow-sm border border-slate-200/50 rounded-[14px] z-10"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -169,31 +180,33 @@ export default function HerbalGuide() {
                     delay: shouldReduceMotion ? 0 : i * 0.04,
                   }}
                 >
-                  <Card className="border-none shadow-glass card-interactive h-full flex flex-col rounded-[24px] sm:rounded-[32px] overflow-hidden">
+                  <Card className="border-none shadow-glass card-premium h-full flex flex-col rounded-[24px] sm:rounded-[32px] overflow-hidden group bg-white/70 backdrop-blur-xl">
                     <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="p-2.5 sm:p-3 bg-green-50 rounded-xl sm:rounded-2xl ring-4 ring-white/30" aria-hidden="true">
-                          <Leaf className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="p-3 bg-green-50 rounded-2xl ring-8 ring-green-500/5 transition-all duration-300 group-hover:ring-green-500/10 group-active:scale-90" aria-hidden="true">
+                          <Leaf className="w-5 h-5 text-green-600" />
                         </div>
                         <Badge
                           variant="secondary"
-                          className={`text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 sm:px-3 py-0.5 sm:py-1 ${CATEGORY_COLORS[remedy.category] || ''}`}
+                          className={`text-[10px] font-black uppercase tracking-[0.1em] px-3 py-1 rounded-lg shadow-sm border border-white/50 ${CATEGORY_COLORS[remedy.category] || ''}`}
                         >
                           {remedy.category}
                         </Badge>
                       </div>
-                      <CardTitle className="text-xl sm:text-2xl font-black text-slate-900">{remedy.name}</CardTitle>
-                      <CardDescription className="italic text-xs sm:text-sm font-medium text-slate-400 mt-1">{remedy.scientificName}</CardDescription>
+                      <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">{remedy.name}</CardTitle>
+                      <CardDescription className="italic text-sm font-semibold text-slate-400 mt-2 block tracking-tight">
+                        {remedy.scientificName}
+                      </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6 sm:p-8 pt-0 flex-1 space-y-5 sm:space-y-6">
-                      <div className="space-y-2 sm:space-y-3">
-                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">Primary Benefits</p>
-                        <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    <CardContent className="p-6 sm:p-8 pt-0 flex-1 flex flex-col space-y-6 sm:space-y-8">
+                      <div className="space-y-3">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Primary Benefits</p>
+                        <div className="flex flex-wrap gap-2">
                           {remedy.benefits.map((b) => (
                             <Badge
                               key={b}
                               variant="outline"
-                              className="text-[9px] sm:text-[10px] font-bold bg-green-50/20 border-green-100 text-slate-600 px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg"
+                              className="text-[10px] font-extrabold bg-green-50/30 border-green-100/50 text-emerald-700 px-3 py-1 rounded-xl shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]"
                             >
                               {b}
                             </Badge>
@@ -201,27 +214,31 @@ export default function HerbalGuide() {
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">Preparation & Dosage</p>
-                        <p className="text-xs sm:text-[13px] font-medium text-slate-600 leading-relaxed">{remedy.usage}</p>
+                      <div className="space-y-2.5">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Preparation & Dosage</p>
+                        <p className="text-sm sm:text-[15px] font-medium text-slate-600 leading-relaxed tracking-tight">{remedy.usage}</p>
                       </div>
 
-                      <div className="p-4 bg-orange-50/50 rounded-2xl border border-orange-100" role="note">
-                        <div className="flex gap-2 sm:gap-3 items-start">
-                          <AlertCircle className="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5" />
-                          <p className="text-[10px] sm:text-xs text-orange-800 leading-relaxed font-semibold">
-                            <strong className="uppercase">Safety:</strong> {remedy.warnings}
-                          </p>
+                      <div className="p-5 bg-red-50/40 rounded-2xl border border-red-100/50 relative overflow-hidden group/safety" role="note">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-red-400/50" />
+                        <div className="flex gap-3 items-start relative z-10">
+                          <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5 group-hover/safety:animate-pulse" />
+                          <div className="space-y-1">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-red-600/70">Safety Protocol</p>
+                            <p className="text-[11px] sm:text-[12px] text-slate-700 leading-relaxed font-semibold tracking-tight">
+                              {remedy.warnings}
+                            </p>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="pt-4 sm:pt-6 border-t border-slate-100">
-                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 sm:mb-3">Suitability Registry</p>
-                        <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      <div className="mt-auto pt-6 border-t border-slate-100/80">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Suitability Registry</p>
+                        <div className="flex flex-wrap gap-2">
                           {remedy.suitability.map((s) => (
                             <span
                               key={s}
-                              className="inline-flex items-center text-[9px] sm:text-[10px] bg-primary/5 text-primary px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-black uppercase tracking-tighter"
+                              className="inline-flex items-center text-[10px] bg-slate-100/50 text-slate-600 px-3 py-1.5 rounded-xl font-black uppercase tracking-tighter border border-slate-200/30 hover:bg-white transition-colors duration-200"
                             >
                               {s}
                             </span>

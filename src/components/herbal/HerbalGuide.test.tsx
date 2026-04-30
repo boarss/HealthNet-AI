@@ -51,7 +51,7 @@ describe('HerbalGuide Component', () => {
     expect(stressButton).toHaveAttribute('aria-pressed', 'true');
 
     // Click 'All' to reset
-    const allButton = screen.getByRole('button', { name: 'All' });
+    const allButton = screen.getByRole('button', { name: /All Remedies/i });
     await user.click(allButton);
     expect(screen.getByText('Ginger')).toBeInTheDocument();
   });

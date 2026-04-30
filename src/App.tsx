@@ -21,6 +21,7 @@ const SIDEBAR_ITEMS = [
 
 export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState('chat');
   const { trigger } = useWebHaptics();
 
   return (
@@ -203,7 +204,14 @@ export default function App() {
 
         {/* Content Area - scrollable with responsive padding */}
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-10 pb-10 max-w-[1600px] mx-auto w-full">
-          <Tabs defaultValue="chat" className="space-y-6 sm:space-y-8" onValueChange={() => trigger('nudge')}>
+          <Tabs 
+            defaultValue="chat" 
+            className="space-y-6 sm:space-y-8" 
+            onValueChange={(val) => {
+              trigger('nudge');
+              setActiveTab(val);
+            }}
+          >
             <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 sm:gap-6 pt-2 sm:pt-4">
               <div className="space-y-1">
                 <motion.h2 
@@ -223,23 +231,41 @@ export default function App() {
                 </motion.p>
               </div>
               
-              <TabsList className="bg-slate-200/40 p-1 h-auto rounded-2xl gap-1 backdrop-blur-md overflow-x-auto no-scrollbar max-w-full justify-start sm:justify-center">
-                {[
-                  { value: 'chat', icon: MessageSquare, label: 'Chat' },
-                  { value: 'dashboard', icon: Activity, label: 'Vitals' },
-                  { value: 'imaging', icon: Camera, label: 'Imaging' },
-                  { value: 'herbal', icon: Leaf, label: 'Herbal' }
-                ].map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="rounded-xl px-3 sm:px-5 py-2 sm:py-3 gap-2 text-xs sm:text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300"
-                  >
-                    <tab.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" /> 
-                    <span className="hidden xs:inline">{tab.label}</span>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+              <div className="relative">
+                <TabsList className="bg-slate-200/40 p-1.5 h-auto rounded-[20px] gap-1 backdrop-blur-md overflow-x-auto no-scrollbar max-w-full justify-start sm:justify-center border border-white/50 shadow-inner relative">
+                  {[
+                    { value: 'chat', icon: MessageSquare, label: 'Chat' },
+                    { value: 'dashboard', icon: Activity, label: 'Vitals' },
+                    { value: 'imaging', icon: Camera, label: 'Imaging' },
+                    { value: 'herbal', icon: Leaf, label: 'Herbal' }
+                  ].map((tab) => {
+                    const isActive = activeTab === tab.value;
+                    return (
+                      <TabsTrigger
+                        key={tab.value}
+                        value={tab.value}
+                        className="relative z-10 rounded-[14px] px-4 sm:px-6 py-2.5 sm:py-3 gap-2.5 text-xs sm:text-sm font-bold data-[state=active]:bg-transparent data-[state=active]:text-primary transition-all duration-300 group overflow-hidden"
+                      >
+                        <motion.div
+                          whileTap={{ scale: 0.94 }}
+                          className="flex items-center gap-2 relative z-20"
+                        >
+                          <tab.icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 ${isActive ? 'scale-110 text-primary' : 'text-slate-400 group-hover:text-slate-600'}`} aria-hidden="true" /> 
+                          <span className={`${isActive ? 'text-primary' : 'text-slate-500 group-hover:text-slate-800'} hidden xs:inline transition-colors duration-300`}>{tab.label}</span>
+                        </motion.div>
+                        
+                        {isActive && (
+                          <motion.div
+                            layoutId="active-pill"
+                            className="absolute inset-0 bg-white shadow-sm border border-slate-200/50 rounded-[14px] z-10"
+                            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                          />
+                        )}
+                      </TabsTrigger>
+                    );
+                  })}
+                </TabsList>
+              </div>
             </div>
 
             <TabsContent value="chat" className="mt-0 focus-visible:outline-none">
