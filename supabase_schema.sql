@@ -37,3 +37,18 @@ ALTER TABLE public.patients ENABLE ROW LEVEL SECURITY;
 -- Create policies (Allowing all for Alpha testing, adjust for production)
 CREATE POLICY "Allow all access to messages" ON public.messages FOR ALL USING (true);
 CREATE POLICY "Allow all access to patients" ON public.patients FOR ALL USING (true);
+-- Create medical_knowledge table
+CREATE TABLE IF NOT EXISTS public.medical_knowledge (
+    disease TEXT PRIMARY KEY,
+    symptoms JSONB NOT NULL,
+    urgency TEXT NOT NULL,
+    recommendations TEXT[],
+    herbal_alternatives TEXT[],
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE public.medical_knowledge ENABLE ROW LEVEL SECURITY;
+
+-- Create policies
+CREATE POLICY "Allow all access to medical_knowledge" ON public.medical_knowledge FOR ALL USING (true);

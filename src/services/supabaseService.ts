@@ -54,4 +54,29 @@ export const supabaseService = {
     if (error) throw error;
     return data;
   },
+
+  // Medical Knowledge Base
+  async getMedicalKnowledge() {
+    const { data, error } = await supabase
+      .from('medical_knowledge')
+      .select('*');
+
+    if (error) throw error;
+    return data;
+  },
+
+  async updateMedicalKnowledge(disease: string, data: any) {
+    const { error } = await supabase
+      .from('medical_knowledge')
+      .upsert({
+        disease,
+        symptoms: data.symptoms,
+        urgency: data.urgency,
+        recommendations: data.recommendations,
+        herbal_alternatives: data.herbalAlternatives,
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) throw error;
+  }
 };

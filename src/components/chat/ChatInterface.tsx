@@ -8,9 +8,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
-import { Message } from '@/src/types';
+import { Message, DiagnosisResult } from '@/src/types';
 import { getChatResponse } from '@/src/services/geminiService';
 import { supabaseService } from '@/src/services/supabaseService';
+import { predict, extractSymptoms, adjust, KnowledgeBase, setKnowledgeBase } from '@/src/services/medicalEngine';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 
 export default function ChatInterface() {
@@ -27,6 +28,7 @@ export default function ChatInterface() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReasoning, setSelectedReasoning] = useState<Message | null>(null);
+  const [pendingFeedback, setPendingFeedback] = useState<{symptoms: string[], diagnoses: DiagnosisResult[]} | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -59,6 +61,30 @@ export default function ChatInterface() {
     loadHistory();
   }, []);
 
+  // Initialize Medical Knowledge Base from Supabase
+  useEffect(() => {
+    const initKB = async () => {
+      try {
+        const knowledge = await supabaseService.getMedicalKnowledge();
+        if (knowledge && knowledge.length > 0) {
+          const newKB: KnowledgeBase = {};
+          knowledge.forEach((item: any) => {
+            newKB[item.disease] = {
+              symptoms: item.symptoms,
+              urgency: item.urgency,
+              recommendations: item.recommendations,
+              herbalAlternatives: item.herbal_alternatives
+            };
+          });
+          setKnowledgeBase(newKB);
+        }
+      } catch (error) {
+        console.error('Error loading medical knowledge:', error);
+      }
+    };
+    initKB();
+  }, []);
+
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -78,21 +104,49 @@ export default function ChatInterface() {
     supabaseService.saveMessage('main-session', userMessage).catch(console.error);
 
     try {
-      const chatHistory = messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
-      chatHistory.push({ role: 'user', content: input });
+      // 1. LOCAL PREDICTION (Predict Step)
+      const detectedSymptoms = extractSymptoms(input);
+      const localResults = predict(detectedSymptoms);
+      
+      let assistantMessage: Message;
 
-      const responseData = await getChatResponse(chatHistory);
+      if (localResults.length > 0 && localResults[0].confidence > 0.6) {
+        // High confidence local prediction
+        const topResult = localResults[0];
+        assistantMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: `Based on your symptoms (${detectedSymptoms.join(', ')}), my internal analysis suggests a high probability of **${topResult.condition}**. \n\n**Next Steps:** ${topResult.recommendations.join(', ')}. \n\n**Herbal Options:** ${topResult.herbalAlternatives?.join(', ') || 'N/A'}`,
+          timestamp: Date.now(),
+          type: 'diagnosis',
+          reasoning: {
+            steps: [`Detected symptoms: ${detectedSymptoms.join(', ')}`, `Weighted matching against knowledge base`, topResult.explanation],
+            confidence: topResult.confidence,
+          },
+          metadata: { local: true, symptoms: detectedSymptoms, topResult }
+        };
+        
+        // Setup for Feedback (Compare & Adjust)
+        setPendingFeedback({ symptoms: detectedSymptoms, diagnoses: localResults });
+      } else {
+        // Fallback to Gemini if local confidence is low
+        const chatHistory = messages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
+        chatHistory.push({ role: 'user', content: input });
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: responseData.content || 'I’m sorry, I couldn’t process that request.',
-        timestamp: Date.now(),
-        reasoning: responseData.reasoning,
-      };
+        const responseData = await getChatResponse(chatHistory);
+
+        assistantMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: responseData.content || 'I’m sorry, I couldn’t process that request.',
+          timestamp: Date.now(),
+          reasoning: responseData.reasoning,
+          metadata: { local: false }
+        };
+      }
 
       setMessages((prev) => [...prev, assistantMessage]);
       
@@ -110,6 +164,28 @@ export default function ChatInterface() {
     } finally {
       setIsLoading(false);
       inputRef.current?.focus();
+    }
+  };
+
+  const handleFeedback = async (actualCondition: string) => {
+    if (!pendingFeedback) return;
+    
+    trigger('success');
+    const updatedKB = adjust(pendingFeedback.symptoms, actualCondition);
+    
+    // Persist to Supabase (Adjust Step)
+    try {
+      await supabaseService.updateMedicalKnowledge(actualCondition, updatedKB[actualCondition]);
+      setPendingFeedback(null);
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `Thank you for the feedback. I have adjusted my internal parameters to better recognize **${actualCondition}** based on these symptoms. This helps me provide better feedback in the future.`,
+        timestamp: Date.now(),
+        type: 'text'
+      }]);
+    } catch (error) {
+      console.error("Failed to persist feedback", error);
     }
   };
 
@@ -211,6 +287,36 @@ export default function ChatInterface() {
                     </div>
                   </motion.div>
                 ))}
+                
+                {/* Feedback UI (Compare Step) */}
+                {pendingFeedback && !isLoading && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex justify-start pt-4"
+                  >
+                    <Card className="bg-primary/5 border-primary/20 shadow-none rounded-[24px] w-full max-w-[85%]">
+                      <CardHeader className="py-3 px-6">
+                        <CardTitle className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                          <BrainCircuit className="w-4 h-4" /> Compare & Adjust
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="px-6 pb-4 space-y-3">
+                        <p className="text-xs text-slate-500 font-medium">Was this assessment correct? Select the actual condition if different to help me learn.</p>
+                        <div className="flex flex-wrap gap-2">
+                          {pendingFeedback.diagnoses.map(d => (
+                            <Button key={d.condition} size="sm" variant="outline" onClick={() => handleFeedback(d.condition)} className="text-[10px] h-8 rounded-full border-primary/20 hover:bg-primary hover:text-white transition-all">
+                              {d.condition}
+                            </Button>
+                          ))}
+                          <Button size="sm" variant="ghost" onClick={() => setPendingFeedback(null)} className="text-[10px] h-8 rounded-full text-slate-400">
+                            Dismiss
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
               </AnimatePresence>
 
               {/* Enhanced Loading Indicator */}
