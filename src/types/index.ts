@@ -38,3 +38,13 @@ export interface DiagnosisResult {
   recommendations: string[];
   herbalAlternatives?: string[];
 }
+
+export interface TrainingEvent {
+  id: string;
+  timestamp: number;
+  reportedSymptoms: string[];
+  predictedCondition: string;
+  predictedConfidence: number;
+  actualCondition: string;
+  wasCorrect: boolean;
+}

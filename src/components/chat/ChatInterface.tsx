@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useWebHaptics } from 'web-haptics/react';
-import { Send, User, Bot, AlertCircle, Info, Leaf, Activity, BrainCircuit, ShieldCheck, Zap } from 'lucide-react';
+import { Send, User, Bot, AlertCircle, Info, Leaf, Activity, BrainCircuit, ShieldCheck, Zap, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -28,7 +28,9 @@ export default function ChatInterface() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReasoning, setSelectedReasoning] = useState<Message | null>(null);
-  const [pendingFeedback, setPendingFeedback] = useState<{symptoms: string[], diagnoses: DiagnosisResult[]} | null>(null);
+  const [pendingFeedback, setPendingFeedback] = useState<{symptoms: string[], diagnoses: DiagnosisResult[], topPrediction: string} | null>(null);
+  const [customConditionInput, setCustomConditionInput] = useState('');
+  const [showCustomInput, setShowCustomInput] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -127,7 +129,7 @@ export default function ChatInterface() {
         };
         
         // Setup for Feedback (Compare & Adjust)
-        setPendingFeedback({ symptoms: detectedSymptoms, diagnoses: localResults });
+        setPendingFeedback({ symptoms: detectedSymptoms, diagnoses: localResults, topPrediction: topResult.condition });
       } else {
         // Fallback to Gemini if local confidence is low
         const chatHistory = messages.map((m) => ({
@@ -171,16 +173,51 @@ export default function ChatInterface() {
     if (!pendingFeedback) return;
     
     trigger('success');
-    const updatedKB = adjust(pendingFeedback.symptoms, actualCondition);
+    const wasCorrect = actualCondition === pendingFeedback.topPrediction;
+    const topDiagnosis = pendingFeedback.diagnoses[0];
+    
+    // Apply adjust with negative reinforcement
+    const updatedKB = adjust(
+      pendingFeedback.symptoms,
+      actualCondition,
+      pendingFeedback.topPrediction // enables negative reinforcement
+    );
     
     // Persist to Supabase (Adjust Step)
     try {
+      // Log training event
+      await supabaseService.saveTrainingEvent({
+        timestamp: Date.now(),
+        reportedSymptoms: pendingFeedback.symptoms,
+        predictedCondition: pendingFeedback.topPrediction,
+        predictedConfidence: topDiagnosis?.confidence || 0,
+        actualCondition,
+        wasCorrect,
+      });
+
+      // Persist updated knowledge for the actual condition
       await supabaseService.updateMedicalKnowledge(actualCondition, updatedKB[actualCondition]);
+      
+      // Also persist penalized condition if different
+      if (!wasCorrect && updatedKB[pendingFeedback.topPrediction]) {
+        await supabaseService.updateMedicalKnowledge(
+          pendingFeedback.topPrediction,
+          updatedKB[pendingFeedback.topPrediction]
+        );
+      }
+
       setPendingFeedback(null);
+      setShowCustomInput(false);
+      setCustomConditionInput('');
+
+      const feedbackMsg = wasCorrect
+        ? `✅ Correct prediction confirmed! I've reinforced my confidence in recognizing **${actualCondition}** with these symptoms.`
+        : `🔄 Thank you. I've adjusted my model: strengthened **${actualCondition}** and reduced confidence in **${pendingFeedback.topPrediction}** for these symptoms. This improves future accuracy.`;
+
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         role: 'assistant',
-        content: `Thank you for the feedback. I have adjusted my internal parameters to better recognize **${actualCondition}** based on these symptoms. This helps me provide better feedback in the future.`,
+        content: feedbackMsg,
         timestamp: Date.now(),
         type: 'text'
       }]);
@@ -306,14 +343,54 @@ export default function ChatInterface() {
                         <p className="text-xs text-slate-500 font-medium">Was this assessment correct? Select the actual condition if different to help me learn.</p>
                         <div className="flex flex-wrap gap-2">
                           {pendingFeedback.diagnoses.map(d => (
-                            <Button key={d.condition} size="sm" variant="outline" onClick={() => handleFeedback(d.condition)} className="text-[10px] h-8 rounded-full border-primary/20 hover:bg-primary hover:text-white transition-all">
-                              {d.condition}
+                            <Button key={d.condition} size="sm" variant="outline" onClick={() => handleFeedback(d.condition)} className={`text-[10px] h-8 rounded-full border-primary/20 hover:bg-primary hover:text-white transition-all ${d.condition === pendingFeedback.topPrediction ? 'ring-2 ring-primary/30' : ''}`}>
+                              {d.condition} {d.condition === pendingFeedback.topPrediction && '★'}
                             </Button>
                           ))}
-                          <Button size="sm" variant="ghost" onClick={() => setPendingFeedback(null)} className="text-[10px] h-8 rounded-full text-slate-400">
-                            Dismiss
-                          </Button>
                         </div>
+                        
+                        {/* None of these — teach new condition */}
+                        <div className="pt-2 border-t border-primary/10">
+                          {!showCustomInput ? (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setShowCustomInput(true)}
+                              className="text-[10px] h-8 rounded-full text-primary/60 hover:text-primary hover:bg-primary/10 transition-all"
+                            >
+                              <PlusCircle className="w-3 h-3 mr-1.5" /> None of these — teach me a new condition
+                            </Button>
+                          ) : (
+                            <div className="flex gap-2 items-center">
+                              <Input
+                                placeholder="Type the actual condition..."
+                                value={customConditionInput}
+                                onChange={(e) => setCustomConditionInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && customConditionInput.trim()) {
+                                    handleFeedback(customConditionInput.trim());
+                                  }
+                                }}
+                                className="h-8 text-xs rounded-full bg-white/60 border-primary/20 focus-visible:ring-primary/30 flex-1"
+                                autoFocus
+                              />
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  if (customConditionInput.trim()) handleFeedback(customConditionInput.trim());
+                                }}
+                                disabled={!customConditionInput.trim()}
+                                className="text-[10px] h-8 rounded-full bg-primary hover:bg-primary/90 text-white"
+                              >
+                                Teach
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        <Button size="sm" variant="ghost" onClick={() => { setPendingFeedback(null); setShowCustomInput(false); setCustomConditionInput(''); }} className="text-[10px] h-7 rounded-full text-slate-400 w-full">
+                          Dismiss
+                        </Button>
                       </CardContent>
                     </Card>
                   </motion.div>

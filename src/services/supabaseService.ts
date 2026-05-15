@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { Message, PatientData } from '../types';
+import { Message, PatientData, TrainingEvent } from '../types';
 
 export const supabaseService = {
   // Chat History
@@ -74,9 +74,38 @@ export const supabaseService = {
         urgency: data.urgency,
         recommendations: data.recommendations,
         herbal_alternatives: data.herbalAlternatives,
+        adjustment_count: data.adjustmentCount || 0,
         updated_at: new Date().toISOString()
       });
 
     if (error) throw error;
+  },
+
+  // Training Events — Predict-Compare-Adjust History
+  async saveTrainingEvent(event: Omit<TrainingEvent, 'id'>) {
+    const { data, error } = await supabase
+      .from('training_events')
+      .insert([{
+        reported_symptoms: event.reportedSymptoms,
+        predicted_condition: event.predictedCondition,
+        predicted_confidence: event.predictedConfidence,
+        actual_condition: event.actualCondition,
+        was_correct: event.wasCorrect,
+      }]);
+
+    if (error) throw error;
+    return data;
+  },
+
+  async getTrainingHistory(limit = 50) {
+    const { data, error } = await supabase
+      .from('training_events')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data;
   }
 };
+
